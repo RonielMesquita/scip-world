@@ -48,7 +48,8 @@ function StarRating({ rating, size = 12 }: { rating: number; size?: number }) {
 }
 
 function CompanyListCard({ company, onPress }: { company: Company; onPress: () => void }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const lang = (['pt', 'en', 'es'].includes(language) ? language : 'pt') as 'pt' | 'en' | 'es';
   const { user } = useAuth();
   const [showLead, setShowLead] = useState(false);
 
@@ -107,7 +108,7 @@ function CompanyListCard({ company, onPress }: { company: Company; onPress: () =
         </View>
 
         {/* Description */}
-        <Text style={styles.description} numberOfLines={2}>{company.description}</Text>
+        <Text style={styles.description} numberOfLines={2}>{company.description[lang]}</Text>
 
         {/* Services */}
         <View style={styles.servicesList}>

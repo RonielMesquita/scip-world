@@ -68,7 +68,8 @@ function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
 
 export default function EmpresaProfileScreen() {
   const insets = useSafeAreaInsets();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const lang = (['pt', 'en', 'es'].includes(language) ? language : 'pt') as 'pt' | 'en' | 'es';
   const navigation = useNavigation<NavProp>();
   const route = useRoute<ProfileRoute>();
   const { company } = route.params;
@@ -187,7 +188,7 @@ export default function EmpresaProfileScreen() {
           </View>
 
           <View style={styles.descDivider} />
-          <Text style={styles.description}>{company.description}</Text>
+          <Text style={styles.description}>{company.description[lang]}</Text>
         </View>
 
         {/* Tabs */}

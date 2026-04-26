@@ -67,7 +67,7 @@ export interface Company {
   verified: boolean;
   category: string;
   services: string[];
-  description: string;
+  description: { pt: string; en: string; es: string };
   coverImage: string;
   logoColor: string;
   logoInitial: string;
@@ -86,8 +86,11 @@ export const COMPANIES: Company[] = [
     verified: true,
     category: 'Construção',
     services: ['Alvenaria SCIP', 'Projetos Sustentáveis', 'Reforma'],
-    description:
-      'Especialistas em construção sustentável com tecnologia SCIP. Mais de 15 anos entregando obras de alto padrão com foco em eficiência e inovação.',
+    description: {
+      pt: 'Especialistas em construção sustentável com tecnologia SCIP. Mais de 15 anos entregando obras de alto padrão com foco em eficiência e inovação.',
+      en: 'SCIP technology sustainable construction specialists. Over 15 years delivering high-standard projects focused on efficiency and innovation.',
+      es: 'Especialistas en construcción sostenible con tecnología SCIP. Más de 15 años entregando obras de alto estándar con foco en eficiencia e innovación.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80',
     logoColor: '#00C48C',
     logoInitial: 'E',
@@ -102,8 +105,11 @@ export const COMPANIES: Company[] = [
     verified: true,
     category: 'Engenharia',
     services: ['Engenharia Estrutural', 'Laudos Técnicos', 'Consultoria'],
-    description:
-      'Engenharia de alta precisão com soluções inovadoras para construção civil. Nosso time é formado por engenheiros seniores com expertise em painéis SCIP.',
+    description: {
+      pt: 'Engenharia de alta precisão com soluções inovadoras para construção civil. Nosso time é formado por engenheiros seniores com expertise em painéis SCIP.',
+      en: 'High-precision engineering with innovative solutions for civil construction. Our team is formed by senior engineers with expertise in SCIP panels.',
+      es: 'Ingeniería de alta precisión con soluciones innovadoras para la construcción civil. Nuestro equipo está formado por ingenieros senior con experiencia en paneles SCIP.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80',
     logoColor: '#2F6BFF',
     logoInitial: 'F',
@@ -118,8 +124,11 @@ export const COMPANIES: Company[] = [
     verified: true,
     category: 'Arquitetura',
     services: ['Arquitetura', 'Design de Interiores', 'Projetos 3D'],
-    description:
-      'Studio de arquitetura premium especializado em residências de alto padrão. Integramos tecnologia SCIP desde a fase de projeto para máxima eficiência.',
+    description: {
+      pt: 'Studio de arquitetura premium especializado em residências de alto padrão. Integramos tecnologia SCIP desde a fase de projeto para máxima eficiência.',
+      en: 'Premium architecture studio specialized in high-end residences. We integrate SCIP technology from the design phase for maximum efficiency.',
+      es: 'Estudio de arquitectura premium especializado en residencias de alto estándar. Integramos tecnología SCIP desde la fase de proyecto para máxima eficiencia.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80',
     logoColor: '#FF7A00',
     logoInitial: 'A',
@@ -134,8 +143,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Fábrica',
     services: ['Fabricação de Painéis', 'Corte CNC', 'Entrega Nacional'],
-    description:
-      'Fábrica líder em produção de painéis SCIP com tecnologia CNC. Atendemos construtoras e autônomos em todo o Brasil com qualidade certificada.',
+    description: {
+      pt: 'Fábrica líder em produção de painéis SCIP com tecnologia CNC. Atendemos construtoras e autônomos em todo o Brasil com qualidade certificada.',
+      en: 'Leading factory in SCIP panel production with CNC technology. We serve builders and independent contractors nationwide with certified quality.',
+      es: 'Fábrica líder en producción de paneles SCIP con tecnología CNC. Atendemos constructoras y autónomos en todo Brasil con calidad certificada.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1565031491910-e57fac031c41?w=800&q=80',
     logoColor: '#A0A8B8',
     logoInitial: 'P',
@@ -150,8 +162,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Construção',
     services: ['Obra Residencial', 'Obra Comercial', 'SCIP Avançado'],
-    description:
-      'Construtora moderna com foco em velocidade e qualidade. Reduzimos o tempo de obra em até 60% com o sistema SCIP sem abrir mão do acabamento premium.',
+    description: {
+      pt: 'Construtora moderna com foco em velocidade e qualidade. Reduzimos o tempo de obra em até 60% com o sistema SCIP sem abrir mão do acabamento premium.',
+      en: 'Modern construction company focused on speed and quality. We reduce build time by up to 60% with the SCIP system without compromising premium finishes.',
+      es: 'Constructora moderna con foco en velocidad y calidad. Reducimos el tiempo de obra hasta un 60% con el sistema SCIP sin renunciar al acabado premium.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80',
     logoColor: '#FF4D4D',
     logoInitial: 'C',
@@ -166,8 +181,11 @@ export const COMPANIES: Company[] = [
     verified: true,
     category: 'Construção',
     services: ['Obras Litorâneas', 'SCIP Costeiro', 'Alto Padrão'],
-    description:
-      'Construtora especializada em empreendimentos litorâneos de alto padrão com tecnologia SCIP. Projetos que unem durabilidade, resistência à maresia e design contemporâneo.',
+    description: {
+      pt: 'Construtora especializada em empreendimentos litorâneos de alto padrão com tecnologia SCIP. Projetos que unem durabilidade, resistência à maresia e design contemporâneo.',
+      en: 'Construction company specialized in high-end coastal developments with SCIP technology. Projects that combine durability, salt air resistance and contemporary design.',
+      es: 'Constructora especializada en emprendimientos costeros de alto estándar con tecnología SCIP. Proyectos que combinan durabilidad, resistencia a la salitre y diseño contemporáneo.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=800&q=80',
     logoColor: '#00C8FF',
     logoInitial: 'B',
@@ -182,7 +200,11 @@ export const COMPANIES: Company[] = [
     verified: true,
     category: 'Gestão de Obra',
     services: ['Gestão de Cronograma', 'Controle de Custos', 'BIM'],
-    description: 'Especialistas em gestão de obras com tecnologia BIM. Garantimos prazos e orçamentos com dashboards em tempo real e coordenação completa da equipe de campo.',
+    description: {
+      pt: 'Especialistas em gestão de obras com tecnologia BIM. Garantimos prazos e orçamentos com dashboards em tempo real e coordenação completa da equipe de campo.',
+      en: 'Construction management specialists using BIM technology. We guarantee deadlines and budgets with real-time dashboards and full field team coordination.',
+      es: 'Especialistas en gestión de obras con tecnología BIM. Garantizamos plazos y presupuestos con dashboards en tiempo real y coordinación completa del equipo de campo.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80',
     logoColor: '#7B61FF',
     logoInitial: 'O',
@@ -197,7 +219,11 @@ export const COMPANIES: Company[] = [
     verified: true,
     category: 'Consultoria',
     services: ['Consultoria Técnica', 'Due Diligence', 'Laudos SCIP'],
-    description: 'Consultoria técnica especializada em construção SCIP. Assessoramos desde a viabilidade do projeto até a entrega final, garantindo conformidade e excelência técnica.',
+    description: {
+      pt: 'Consultoria técnica especializada em construção SCIP. Assessoramos desde a viabilidade do projeto até a entrega final, garantindo conformidade e excelência técnica.',
+      en: 'Technical consultancy specialized in SCIP construction. We advise from project feasibility to final delivery, ensuring compliance and technical excellence.',
+      es: 'Consultoría técnica especializada en construcción SCIP. Asesoramos desde la viabilidad del proyecto hasta la entrega final, garantizando conformidad y excelencia técnica.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80',
     logoColor: '#FF7A00',
     logoInitial: 'N',
@@ -212,7 +238,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Projetos',
     services: ['Projeto Executivo', 'Compatibilização', 'Projetos 3D'],
-    description: 'Escritório de projetos multidisciplinar com foco em construções SCIP. Desenvolvemos projetos arquitetônicos, estruturais e complementares totalmente integrados.',
+    description: {
+      pt: 'Escritório de projetos multidisciplinar com foco em construções SCIP. Desenvolvemos projetos arquitetônicos, estruturais e complementares totalmente integrados.',
+      en: 'Multidisciplinary project office focused on SCIP constructions. We develop fully integrated architectural, structural and complementary projects.',
+      es: 'Oficina de proyectos multidisciplinar con foco en construcciones SCIP. Desarrollamos proyectos arquitectónicos, estructurales y complementarios totalmente integrados.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=800&q=80',
     logoColor: '#00C8FF',
     logoInitial: 'P',
@@ -227,7 +257,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Elétrica',
     services: ['Instalações Elétricas', 'Automação Residencial', 'SPDA'],
-    description: 'Especialistas em instalações elétricas em painéis SCIP. Executamos projetos residenciais e comerciais com segurança certificada e acabamento impecável.',
+    description: {
+      pt: 'Especialistas em instalações elétricas em painéis SCIP. Executamos projetos residenciais e comerciais com segurança certificada e acabamento impecável.',
+      en: 'Specialists in electrical installations in SCIP panels. We execute residential and commercial projects with certified safety and impeccable finishes.',
+      es: 'Especialistas en instalaciones eléctricas en paneles SCIP. Ejecutamos proyectos residenciales y comerciales con seguridad certificada y acabado impecable.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=800&q=80',
     logoColor: '#FFB300',
     logoInitial: 'E',
@@ -242,7 +276,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Hidráulica',
     services: ['Hidráulica SCIP', 'Captação de Água', 'Esgoto Sanitário'],
-    description: 'Soluções hidráulicas completas para construções em painéis SCIP. Instalamos sistemas de água fria, quente e esgoto com tecnologia de embutimento certificada.',
+    description: {
+      pt: 'Soluções hidráulicas completas para construções em painéis SCIP. Instalamos sistemas de água fria, quente e esgoto com tecnologia de embutimento certificada.',
+      en: 'Complete hydraulic solutions for SCIP panel constructions. We install cold water, hot water and sewage systems with certified embedding technology.',
+      es: 'Soluciones hidráulicas completas para construcciones en paneles SCIP. Instalamos sistemas de agua fría, caliente y alcantarillado con tecnología de embutimiento certificada.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=80',
     logoColor: '#4CC9F0',
     logoInitial: 'H',
@@ -257,7 +295,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Reboco Projetado',
     services: ['Reboco Projetado', 'Textura Acrílica', 'Argamassa SCIP'],
-    description: 'Líderes em reboco projetado para painéis SCIP. Utilizamos argamassas de alta aderência específicas para EPS, garantindo acabamento liso e durável.',
+    description: {
+      pt: 'Líderes em reboco projetado para painéis SCIP. Utilizamos argamassas de alta aderência específicas para EPS, garantindo acabamento liso e durável.',
+      en: 'Leaders in projected plastering for SCIP panels. We use high-adhesion mortars specific to EPS, ensuring smooth and durable finishes.',
+      es: 'Líderes en revoque proyectado para paneles SCIP. Utilizamos morteros de alta adherencia específicos para EPS, garantizando acabado liso y duradero.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=800&q=80',
     logoColor: '#A0A8B8',
     logoInitial: 'R',
@@ -272,7 +314,11 @@ export const COMPANIES: Company[] = [
     verified: true,
     category: 'Concreto',
     services: ['Concretagem', 'Concreto Usinado', 'Lajes SCIP'],
-    description: 'Fornecimento e aplicação de concreto para estruturas SCIP. Trabalhamos com traços específicos para aderência em EPS, incluindo lajes nervuradas e contrapisos.',
+    description: {
+      pt: 'Fornecimento e aplicação de concreto para estruturas SCIP. Trabalhamos com traços específicos para aderência em EPS, incluindo lajes nervuradas e contrapisos.',
+      en: 'Supply and application of concrete for SCIP structures. We work with specific mixes for EPS adhesion, including ribbed slabs and subflooring.',
+      es: 'Suministro y aplicación de concreto para estructuras SCIP. Trabajamos con mezclas específicas para adherencia en EPS, incluyendo losas nervadas y contrapisos.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80',
     logoColor: '#8D9EB5',
     logoInitial: 'C',
@@ -287,7 +333,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Fornecedores',
     services: ['Painéis EPS', 'Tela de Aço Galvanizado', 'Insumos SCIP'],
-    description: 'Distribuidora especializada em insumos para construção SCIP. Fornecemos painéis EPS certificados, telas de aço galvanizado e todos os acessórios para obra.',
+    description: {
+      pt: 'Distribuidora especializada em insumos para construção SCIP. Fornecemos painéis EPS certificados, telas de aço galvanizado e todos os acessórios para obra.',
+      en: 'Distributor specialized in inputs for SCIP construction. We supply certified EPS panels, galvanized steel mesh and all construction accessories.',
+      es: 'Distribuidora especializada en insumos para construcción SCIP. Suministramos paneles EPS certificados, mallas de acero galvanizado y todos los accesorios para obra.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80',
     logoColor: '#00C48C',
     logoInitial: 'S',
@@ -302,7 +352,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Aluguel de Máquinas',
     services: ['Projetores de Argamassa', 'Bombas de Concreto', 'Andaimes'],
-    description: 'Locadora de máquinas e equipamentos para obras SCIP. Disponibilizamos projetores de argamassa, bombas de concreto, andaimes e toda a infraestrutura necessária.',
+    description: {
+      pt: 'Locadora de máquinas e equipamentos para obras SCIP. Disponibilizamos projetores de argamassa, bombas de concreto, andaimes e toda a infraestrutura necessária.',
+      en: 'Machinery and equipment rental for SCIP construction sites. We provide mortar sprayers, concrete pumps, scaffolding and all necessary infrastructure.',
+      es: 'Locadora de máquinas y equipos para obras SCIP. Disponemos de proyectores de argamasa, bombas de concreto, andamios y toda la infraestructura necesaria.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80',
     logoColor: '#FF6B35',
     logoInitial: 'L',
@@ -317,7 +371,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Pintura',
     services: ['Pintura Interna', 'Pintura Externa', 'Texturas Decorativas'],
-    description: 'Especialistas em pintura para superfícies SCIP. Utilizamos tintas e primers de alta aderência para EPS rebocado, com acabamentos lisos, texturizados e decorativos.',
+    description: {
+      pt: 'Especialistas em pintura para superfícies SCIP. Utilizamos tintas e primers de alta aderência para EPS rebocado, com acabamentos lisos, texturizados e decorativos.',
+      en: 'Specialists in painting for SCIP surfaces. We use high-adhesion paints and primers for plastered EPS, with smooth, textured and decorative finishes.',
+      es: 'Especialistas en pintura para superficies SCIP. Utilizamos pinturas y primers de alta adherencia para EPS revocado, con acabados lisos, texturizados y decorativos.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=800&q=80',
     logoColor: '#FF4D9D',
     logoInitial: 'P',
@@ -332,7 +390,11 @@ export const COMPANIES: Company[] = [
     verified: true,
     category: 'Telhado',
     services: ['Telhado Cerâmico', 'Telhado Metálico', 'Telhado Verde'],
-    description: 'Soluções completas em cobertura para construções SCIP. Executamos telhados cerâmicos, metálicos e verdes com estrutura leve compatível com o sistema de painéis.',
+    description: {
+      pt: 'Soluções completas em cobertura para construções SCIP. Executamos telhados cerâmicos, metálicos e verdes com estrutura leve compatível com o sistema de painéis.',
+      en: 'Complete roofing solutions for SCIP constructions. We install ceramic, metal and green roofs with lightweight structure compatible with the panel system.',
+      es: 'Soluciones completas en cubierta para construcciones SCIP. Ejecutamos techos cerámicos, metálicos y verdes con estructura ligera compatible con el sistema de paneles.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
     logoColor: '#FF7A00',
     logoInitial: 'T',
@@ -347,7 +409,11 @@ export const COMPANIES: Company[] = [
     verified: true,
     category: 'Impermeabilização',
     services: ['Impermeabilização de Lajes', 'Mantas Asfálticas', 'Impermeabilização SCIP'],
-    description: 'Impermeabilização certificada para estruturas em painéis SCIP. Aplicamos mantas, membranas e revestimentos de alta performance contra infiltrações e umidade.',
+    description: {
+      pt: 'Impermeabilização certificada para estruturas em painéis SCIP. Aplicamos mantas, membranas e revestimentos de alta performance contra infiltrações e umidade.',
+      en: 'Certified waterproofing for SCIP panel structures. We apply membranes, blankets and high-performance coatings against infiltration and moisture.',
+      es: 'Impermeabilización certificada para estructuras en paneles SCIP. Aplicamos mantas, membranas y revestimientos de alto rendimiento contra infiltraciones y humedad.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80',
     logoColor: '#2F6BFF',
     logoInitial: 'I',
@@ -362,7 +428,11 @@ export const COMPANIES: Company[] = [
     verified: false,
     category: 'Pisos',
     services: ['Piso Porcelanato', 'Piso Vinílico', 'Contrapiso SCIP'],
-    description: 'Aplicação de pisos e contrapisos para obras em painéis SCIP. Trabalhamos com porcelanato, vinílico, cimentício e madeira, com nivelamento preciso sobre base SCIP.',
+    description: {
+      pt: 'Aplicação de pisos e contrapisos para obras em painéis SCIP. Trabalhamos com porcelanato, vinílico, cimentício e madeira, com nivelamento preciso sobre base SCIP.',
+      en: 'Flooring and subflooring installation for SCIP panel projects. We work with porcelain, vinyl, cementitious and wood, with precise leveling on SCIP base.',
+      es: 'Aplicación de pisos y contrapisos para obras en paneles SCIP. Trabajamos con porcelanato, vinílico, cementicio y madera, con nivelación precisa sobre base SCIP.',
+    },
     coverImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
     logoColor: '#00C48C',
     logoInitial: 'P',
