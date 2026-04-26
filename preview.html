@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>SCIP WORLD — Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: radial-gradient(ellipse at 30% 20%, #1a2a4a 0%, #080d18 60%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      gap: 18px;
+      padding: 24px;
+    }
+    .header { text-align: center; color: #fff; }
+    .header .logo { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .header .logo-mark {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #FF7A00, #FF5500);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; color: #fff;
+    }
+    .header h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.8px; }
+    .header p  { font-size: 11px; color: #6A7488; margin-top: 2px; }
+
+    .phone-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
+    .phone {
+      width: 375px; height: 780px;
+      background: #04080F;
+      border-radius: 50px;
+      box-shadow:
+        0 0 0 2px #252b3a,
+        0 0 0 6px #161b28,
+        0 0 0 8px #0b0f1a,
+        0 50px 100px rgba(0,0,0,0.8),
+        0 0 80px rgba(255,122,0,0.06);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .island {
+      position: absolute;
+      top: 12px; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 28px;
+      background: #04080F;
+      border-radius: 20px;
+      z-index: 10;
+      box-shadow: 0 0 0 2px #1a1f2e;
+    }
+    .btn-vol-up  { position: absolute; left: -4px; top: 115px; width: 4px; height: 34px; background: #1e2436; border-radius: 3px 0 0 3px; }
+    .btn-vol-dn  { position: absolute; left: -4px; top: 162px; width: 4px; height: 34px; background: #1e2436; border-radius: 3px 0 0 3px; }
+    .btn-power   { position: absolute; right: -4px; top: 135px; width: 4px; height: 56px; background: #1e2436; border-radius: 0 3px 3px 0; }
+    iframe {
+      width: 100%; flex: 1;
+      border: none;
+      margin-top: 44px;
+      border-radius: 0 0 44px 44px;
+    }
+    .home-bar {
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+      width: 120px; height: 4px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 2px; z-index: 10;
+    }
+    .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
+    .ctrl-btn {
+      padding: 7px 16px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: #8A94A8; font-size: 12px; cursor: pointer;
+      transition: all 0.18s;
+    }
+    .ctrl-btn:hover { background: rgba(255,122,0,0.14); border-color: rgba(255,122,0,0.4); color: #FF7A00; }
+    .ctrl-btn.primary {
+      background: linear-gradient(135deg, #FF7A00, #FF5500);
+      border-color: transparent; color: #fff; font-weight: 600;
+    }
+    .ctrl-btn.primary:hover { opacity: 0.88; }
+    .statusbar { display: flex; align-items: center; gap: 12px; font-size: 11px; color: #4A5468; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #00C48C; display: inline-block; animation: pulse 2.5s infinite; }
+    .dot.off { background: #FF4D4D; animation: none; }
+    .sep { width: 1px; height: 14px; background: rgba(255,255,255,0.07); }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.75)} }
+
+    /* Overlay quando servidor não está rodando */
+    .overlay {
+      position: absolute; inset: 0;
+      background: rgba(4,8,15,0.92);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; z-index: 20;
+      border-radius: 50px;
+      transition: opacity 0.4s;
+    }
+    .overlay.hidden { opacity: 0; pointer-events: none; }
+    .overlay-icon { font-size: 36px; }
+    .overlay-title { font-size: 14px; font-weight: 600; color: #fff; text-align: center; padding: 0 24px; }
+    .overlay-sub   { font-size: 11px; color: #6A7488; text-align: center; padding: 0 28px; line-height: 1.6; }
+    .overlay-cmd   {
+      background: rgba(255,122,0,0.12);
+      border: 1px solid rgba(255,122,0,0.3);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 12px; color: #FF7A00;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-mark">S</div>
+      <h1>SCIP WORLD</h1>
+    </div>
+    <p>Visualizador de desenvolvimento</p>
+  </div>
+
+  <div class="phone-wrap">
+    <div class="btn-vol-up"></div>
+    <div class="btn-vol-dn"></div>
+    <div class="btn-power"></div>
+    <div class="phone">
+      <div class="island"></div>
+
+      <!-- Overlay quando Expo não está rodando -->
+      <div class="overlay" id="overlay">
+        <div class="overlay-icon">⚡</div>
+        <div class="overlay-title">Servidor não encontrado</div>
+        <div class="overlay-sub">Abra um terminal no VS Code e rode o comando:</div>
+        <div class="overlay-cmd">npx expo start --web</div>
+        <div class="overlay-sub">Depois clique em Reload abaixo.</div>
+      </div>
+
+      <iframe id="appFrame" src="http://localhost:8081" title="SCIP WORLD App"></iframe>
+      <div class="home-bar"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn" onclick="reloadApp()">↺ Reload</button>
+    <button class="ctrl-btn" onclick="toggleSize()" id="sizeBtn">⊞ Maior</button>
+    <div class="sep"></div>
+    <button class="ctrl-btn primary" onclick="window.open('http://localhost:8081','_blank')">Abrir em nova aba ↗</button>
+  </div>
+
+  <div class="statusbar">
+    <span><span class="dot off" id="dot"></span>&nbsp;<span id="statusText">Verificando...</span></span>
+    <div class="sep"></div>
+    <span>localhost:8081</span>
+  </div>
+
+  <script>
+    const frame   = document.getElementById('appFrame');
+    const overlay = document.getElementById('overlay');
+    const dot     = document.getElementById('dot');
+    const status  = document.getElementById('statusText');
+    let big = false, serverOk = false;
+
+    function reloadApp() { frame.src = 'http://localhost:8081?' + Date.now(); }
+
+    function toggleSize() {
+      big = !big;
+      const phone = document.querySelector('.phone');
+      phone.style.width  = big ? '414px' : '375px';
+      phone.style.height = big ? '896px' : '780px';
+      document.getElementById('sizeBtn').textContent = big ? '⊟ Menor' : '⊞ Maior';
+    }
+
+    function checkServer() {
+      fetch('http://localhost:8081', { mode: 'no-cors', cache: 'no-store' })
+        .then(() => {
+          if (!serverOk) { serverOk = true; reloadApp(); }
+          dot.classList.remove('off');
+          overlay.classList.add('hidden');
+          status.textContent = 'Servidor ativo';
+        })
+        .catch(() => {
+          serverOk = false;
+          dot.classList.add('off');
+          overlay.classList.remove('hidden');
+          status.textContent = 'Aguardando servidor...';
+        });
+    }
+
+    checkServer();
+    setInterval(checkServer, 3000);
+  </script>
+
+</body>
+</html>
