@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Linking,
   Platform,
   StatusBar,
   FlatList,
@@ -16,10 +15,16 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Grad from '../components/Grad';
 import Colors from '../constants/colors';
 import { SPECIALISTS, SPECIALIST_AREAS, Specialist } from '../data/mockData';
 import { useLanguage } from '../contexts/LanguageContext';
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { useAuth } from '../contexts/AuthContext';
+import LeadFormModal from '../components/LeadFormModal';
+
+type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 const { width: SW } = Dimensions.get('window');
 // image is ~820×1060 portrait
@@ -29,7 +34,12 @@ const HERO_IMAGE = require('../../assets/hero-especialistas.png');
 // ─── Specialist Card ──────────────────────────────────────────────────────────
 function SpecialistCard({ item }: { item: Specialist }) {
   const { t } = useLanguage();
+  const navigation = useNavigation<NavProp>();
+  const { user } = useAuth();
+  const [showLead, setShowLead] = useState(false);
+
   return (
+    <>
     <View style={styles.card}>
       <Grad
         colors={['rgba(11,28,61,0.97)', 'rgba(7,13,26,0.99)']}
@@ -61,6 +71,12 @@ function SpecialistCard({ item }: { item: Specialist }) {
               {item.isOnline ? t('especialistas.onlineNow') : t('especialistas.offline')}
             </Text>
           </View>
+        </View>
+
+        {/* Location */}
+        <View style={styles.locationBadge}>
+          <Ionicons name="location-outline" size={10} color={Colors.textDim} />
+          <Text style={styles.locationText} numberOfLines={1}>{item.location}</Text>
         </View>
       </View>
 
@@ -94,23 +110,46 @@ function SpecialistCard({ item }: { item: Specialist }) {
         </View>
       </View>
 
-      {/* CTA */}
-      <TouchableOpacity
-        style={styles.ctaBtn}
-        activeOpacity={0.85}
-        onPress={() => Linking.openURL(`https://wa.me/${item.phone.replace(/\D/g, '')}`)}
-      >
-        <Grad
-          colors={['#25D366', '#128C7E']}
-          style={StyleSheet.absoluteFill}
-          borderRadius={12}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-        />
-        <Ionicons name="logo-whatsapp" size={16} color="#fff" />
-        <Text style={styles.ctaBtnText}>{t('especialistas.talkToExpert')}</Text>
-      </TouchableOpacity>
+      {/* CTA row */}
+      <View style={styles.ctaRow}>
+        <TouchableOpacity
+          style={styles.ctaBtnSecondary}
+          activeOpacity={0.85}
+          onPress={() => navigation.navigate('EspecialistaProfile', { specialist: item })}
+        >
+          <Grad
+            colors={[item.avatarColor + '25', item.avatarColor + '10']}
+            style={StyleSheet.absoluteFill}
+            borderRadius={12}
+          />
+          <Text style={[styles.ctaBtnSecondaryText, { color: item.avatarColor }]}>Ver Perfil</Text>
+          <Ionicons name="arrow-forward-outline" size={14} color={item.avatarColor} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.ctaBtn}
+          activeOpacity={0.85}
+          onPress={() => setShowLead(true)}
+        >
+          <Grad
+            colors={Colors.gradients.premium}
+            style={StyleSheet.absoluteFill}
+            borderRadius={12}
+          />
+          <Ionicons name="calendar-outline" size={16} color="#fff" />
+          <Text style={styles.ctaBtnText}>Solicitar Consulta</Text>
+        </TouchableOpacity>
+      </View>
     </View>
+    <LeadFormModal
+      visible={showLead}
+      onClose={() => setShowLead(false)}
+      companyId={item.id}
+      companyName={item.name}
+      user={user}
+      mode="consulta"
+    />
+    </>
   );
 }
 
@@ -280,7 +319,7 @@ export default function EspecialistasScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <SpecialistCard item={item} />}
         ListHeaderComponent={ListHeader}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, gap: 14, paddingBottom: insets.bottom + 24 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: insets.top, gap: 14, paddingBottom: insets.bottom + 24 }}
         contentInsetAdjustmentBehavior="never"
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -583,8 +622,42 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
 
+  locationBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 4,
+  },
+  locationText: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 10,
+    color: Colors.textDim,
+  },
+
+  ctaRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  ctaBtnSecondary: {
+    flex: 1,
+    height: 42,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  ctaBtnSecondaryText: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 13,
+    zIndex: 1,
+  },
   ctaBtn: {
-    height: 46,
+    flex: 1,
+    height: 42,
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
@@ -594,7 +667,7 @@ const styles = StyleSheet.create({
   },
   ctaBtnText: {
     fontFamily: 'Inter_500Medium',
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.white,
     zIndex: 1,
   },

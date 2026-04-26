@@ -3,13 +3,13 @@ import {
   View,
   Text,
   FlatList,
+  ScrollView,
   TouchableOpacity,
   StyleSheet,
   StatusBar,
   ImageBackground,
   TextInput,
   Platform,
-  Linking,
   Image,
   Dimensions,
 } from 'react-native';
@@ -24,11 +24,18 @@ import Colors from '../constants/colors';
 import { COMPANIES, Company } from '../data/mockData';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import LeadFormModal from '../components/LeadFormModal';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 const COVER_IMAGE = require('../../assets/hero-empresas.png');
-const FILTER_KEYS = ['all', 'engineering', 'construction', 'factory'] as const;
+const FILTER_KEYS = [
+  'all', 'construction', 'engineering', 'architecture', 'factory',
+  'management', 'consulting', 'projects', 'electrical', 'hydraulic',
+  'plaster', 'concrete', 'suppliers', 'equipment',
+  'painting', 'roofing', 'waterproofing', 'flooring',
+] as const;
 
 function StarRating({ rating, size = 12 }: { rating: number; size?: number }) {
   return (
@@ -42,12 +49,11 @@ function StarRating({ rating, size = 12 }: { rating: number; size?: number }) {
 
 function CompanyListCard({ company, onPress }: { company: Company; onPress: () => void }) {
   const { t } = useLanguage();
-  const handleWhatsApp = () => {
-    const msg = encodeURIComponent(t('empresas.whatsappMsg'));
-    Linking.openURL(`https://wa.me/${company.phone.replace(/\D/g, '')}?text=${msg}`);
-  };
+  const { user } = useAuth();
+  const [showLead, setShowLead] = useState(false);
 
   return (
+    <>
     <TouchableOpacity style={styles.companyCard} onPress={onPress} activeOpacity={0.88}>
       {/* Cover Image */}
       <ImageBackground
@@ -86,7 +92,7 @@ function CompanyListCard({ company, onPress }: { company: Company; onPress: () =
             <View style={styles.ratingRow}>
               <StarRating rating={company.rating} />
               <Text style={styles.ratingText}>{company.rating.toFixed(1)}</Text>
-              <Text style={styles.reviewCount}>({company.reviewCount} avaliações)</Text>
+              <Text style={styles.reviewCount}>({company.reviewCount} {t('empresas.reviewsLabel')})</Text>
             </View>
           </View>
           <View style={[styles.scoreCircle, { borderColor: company.logoColor + '40' }]}>
@@ -117,13 +123,25 @@ function CompanyListCard({ company, onPress }: { company: Company; onPress: () =
           <TouchableOpacity style={styles.profileBtn} onPress={onPress} activeOpacity={0.8}>
             <Text style={styles.profileBtnText}>{t('empresas.viewProfile')}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.whatsappBtn} onPress={handleWhatsApp} activeOpacity={0.8}>
-            <Grad colors={['#25D366', '#128C7E']} style={StyleSheet.absoluteFill} borderRadius={12} />
-            <Text style={styles.whatsappText}>{t('empresas.whatsapp')}</Text>
+          <TouchableOpacity
+            style={styles.orcamentoBtn}
+            onPress={(e) => { e.stopPropagation?.(); setShowLead(true); }}
+            activeOpacity={0.85}
+          >
+            <Grad colors={Colors.gradients.premium} style={StyleSheet.absoluteFill} borderRadius={12} />
+            <Text style={styles.orcamentoBtnText}>{t('empresas.requestQuote')}</Text>
           </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>
+    <LeadFormModal
+      visible={showLead}
+      onClose={() => setShowLead(false)}
+      companyId={company.id}
+      companyName={company.name}
+      user={user}
+    />
+    </>
   );
 }
 
@@ -138,9 +156,23 @@ export default function EmpresasScreen() {
 
   const categoryMap: Record<typeof FILTER_KEYS[number], string> = {
     all: '',
-    engineering: 'Engenharia',
     construction: 'Construção',
+    engineering: 'Engenharia',
+    architecture: 'Arquitetura',
     factory: 'Fábrica',
+    management: 'Gestão de Obra',
+    consulting: 'Consultoria',
+    projects: 'Projetos',
+    electrical: 'Elétrica',
+    hydraulic: 'Hidráulica',
+    plaster: 'Reboco Projetado',
+    concrete: 'Concreto',
+    suppliers: 'Fornecedores',
+    equipment: 'Aluguel de Máquinas',
+    painting: 'Pintura',
+    roofing: 'Telhado',
+    waterproofing: 'Impermeabilização',
+    flooring: 'Pisos',
   };
 
   const filtered = COMPANIES.filter((c) => {
@@ -167,7 +199,7 @@ export default function EmpresasScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.listContent,
-          { paddingTop: 0, paddingBottom: insets.bottom + 100 },
+          { paddingTop: insets.top, paddingBottom: insets.bottom + 100 },
         ]}
         ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
         ListHeaderComponent={
@@ -179,39 +211,35 @@ export default function EmpresasScreen() {
                 style={{ width: SW, height: HERO_H }}
                 resizeMode="stretch"
               />
-              {/* Overlay: moderate top, very light mid, subtle bottom */}
               <Grad
                 colors={['rgba(4,8,15,0.55)', 'rgba(4,8,15,0.05)', 'rgba(4,8,15,0.45)', 'rgba(4,8,15,0.82)']}
                 style={StyleSheet.absoluteFill}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
               />
-              {/* Top safe area spacer + badge */}
               <View style={[styles.coverTopBar, { paddingTop: insets.top + 10 }]}>
-                <View style={styles.coverBadge}>
+                <View style={styles.coverBadgeHero}>
                   <View style={styles.coverBadgeDot} />
                   <Text style={styles.coverBadgeText}>{t('empresas.badge')}</Text>
                 </View>
               </View>
-              {/* Content anchored to bottom */}
               <View style={styles.coverContent}>
                 <Text style={styles.coverTitle}>{t('empresas.coverTitle')}</Text>
                 <Text style={styles.coverSubtitle}>{t('empresas.coverSubtitle')}</Text>
-                {/* Stats */}
                 <View style={styles.coverStats}>
                   <View style={styles.coverStat}>
                     <Text style={styles.coverStatValue}>{COMPANIES.length}</Text>
-                    <Text style={styles.coverStatLabel}>Empresas</Text>
+                    <Text style={styles.coverStatLabel}>{t('empresas.coverCompanies')}</Text>
                   </View>
                   <View style={styles.coverStatDiv} />
                   <View style={styles.coverStat}>
                     <Text style={styles.coverStatValue}>{COMPANIES.filter(c => c.verified).length}</Text>
-                    <Text style={styles.coverStatLabel}>Verificadas</Text>
+                    <Text style={styles.coverStatLabel}>{t('empresas.coverVerified')}</Text>
                   </View>
                   <View style={styles.coverStatDiv} />
                   <View style={styles.coverStat}>
-                    <Text style={styles.coverStatValue}>3</Text>
-                    <Text style={styles.coverStatLabel}>Categorias</Text>
+                    <Text style={styles.coverStatValue}>{FILTER_KEYS.length - 1}</Text>
+                    <Text style={styles.coverStatLabel}>{t('empresas.coverCategories')}</Text>
                   </View>
                 </View>
               </View>
@@ -235,7 +263,11 @@ export default function EmpresasScreen() {
                 )}
               </View>
 
-              <View style={styles.filters}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.filters}
+              >
                 {FILTER_KEYS.map((key) => (
                   <TouchableOpacity
                     key={key}
@@ -251,7 +283,7 @@ export default function EmpresasScreen() {
                     </Text>
                   </TouchableOpacity>
                 ))}
-              </View>
+              </ScrollView>
 
               <Text style={styles.resultsCount}>{countLabel}</Text>
             </View>
@@ -266,9 +298,9 @@ export default function EmpresasScreen() {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={styles.emptyIcon}>🏢</Text>
-            <Text style={styles.emptyText}>Nenhuma empresa encontrada</Text>
+            <Text style={styles.emptyText}>{t('empresas.emptyTitle')}</Text>
             <TouchableOpacity onPress={() => { setSearch(''); setActiveFilter('all'); }}>
-              <Text style={styles.emptyReset}>Limpar filtros</Text>
+              <Text style={styles.emptyReset}>{t('empresas.clearFilters')}</Text>
             </TouchableOpacity>
           </View>
         }
@@ -280,37 +312,6 @@ export default function EmpresasScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.bgDeep },
   listContent: { paddingHorizontal: 16 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  headerTitle: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 23,
-    color: Colors.white,
-  },
-  headerSubtitle: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 13,
-    color: Colors.textMuted,
-    marginTop: 2,
-  },
-  headerBadge: {
-    backgroundColor: 'rgba(0,196,140,0.12)',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(0,196,140,0.25)',
-    marginTop: 4,
-  },
-  headerBadgeText: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 12,
-    color: '#00C48C',
-  },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -524,7 +525,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.blue,
   },
-  whatsappBtn: {
+  orcamentoBtn: {
     flex: 1,
     height: 42,
     borderRadius: 12,
@@ -532,7 +533,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  whatsappText: {
+  orcamentoBtnText: {
     fontFamily: 'Inter_400Regular',
     fontSize: 14,
     color: Colors.white,
@@ -568,7 +569,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: 20,
   },
-  coverBadge: {
+  coverBadgeHero: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -640,5 +641,6 @@ const styles = StyleSheet.create({
   },
   searchSection: {
     paddingHorizontal: 0,
+    marginTop: 16,
   },
 });

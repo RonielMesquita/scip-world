@@ -21,6 +21,8 @@ const { width: SW } = Dimensions.get('window');
 const HERO_H = Math.round(SW * 0.72);
 const HERO_IMAGE = require('../../assets/hero-comunidade.png');
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import Grad from '../components/Grad';
 import Colors from '../constants/colors';
 import { useEntryAnimation } from '../hooks/useEntryAnimation';
@@ -425,6 +427,7 @@ function PostDetailModal({ post, onClose }: { post: CommunityPost | null; onClos
 
 export default function ComunidadeScreen() {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
   const { t } = useLanguage();
   const { opacity, translateY } = useEntryAnimation();
   const [activeTopic, setActiveTopic] = useState('Todos');
@@ -453,7 +456,7 @@ export default function ComunidadeScreen() {
       <Animated.ScrollView
         style={[{ opacity, transform: [{ translateY }] }]}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100, paddingTop: insets.top }]}
       >
         {/* ── Cover Hero ──────────────────────────────────── */}
         <View style={styles.coverHero}>
@@ -470,6 +473,10 @@ export default function ComunidadeScreen() {
           />
           {/* Badge no topo */}
           <View style={[styles.coverTopBar, { paddingTop: insets.top + 10 }]}>
+            <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.8}>
+              <Grad colors={['rgba(4,8,15,0.75)', 'rgba(4,8,15,0.55)']} style={StyleSheet.absoluteFill} borderRadius={999} />
+              <Ionicons name="arrow-back" size={18} color={Colors.white} />
+            </TouchableOpacity>
             <View style={styles.coverBadge}>
               <View style={styles.coverBadgeDot} />
               <Text style={styles.coverBadgeText}>SCIP COMUNIDADE</Text>
@@ -1004,6 +1011,19 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  backBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
   },
   coverBadge: {
     flexDirection: 'row',

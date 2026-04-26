@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,9 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  Platform,
   ActivityIndicator,
 } from 'react-native';
-import { WebView } from 'react-native-webview';
+import YoutubePlayer from 'react-native-youtube-iframe';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../constants/colors';
 
@@ -23,47 +22,18 @@ interface YoutubePlayerModalProps {
   onClose: () => void;
 }
 
-// On web: WebView renders as <iframe src="..."> pointing directly to YouTube embed
-// On native: WebView renders natively with the same URI
-function YoutubeEmbed({ videoId, onLoad }: { videoId: string; onLoad: () => void }) {
-  const embedUri = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-
-  if (Platform.OS === 'web') {
-    // For web, render a real iframe via dangerouslySetInnerHTML workaround
-    const IframeComponent = 'iframe' as any;
-    return (
-      <View style={styles.webview}>
-        <IframeComponent
-          src={embedUri}
-          style={{ width: '100%', height: '100%', border: 'none' }}
-          allow="autoplay; fullscreen; accelerometer; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          onLoad={onLoad}
-        />
-      </View>
-    );
-  }
-
-  return (
-    <WebView
-      style={styles.webview}
-      source={{ uri: embedUri }}
-      allowsFullscreenVideo
-      javaScriptEnabled
-      mediaPlaybackRequiresUserAction={false}
-      allowsInlineMediaPlayback
-      onLoadEnd={onLoad}
-      originWhitelist={['*']}
-    />
-  );
-}
-
 export default function YoutubePlayerModal({ videoId, title, visible, onClose }: YoutubePlayerModalProps) {
   const insets = useSafeAreaInsets();
-  const [loading, setLoading] = useState(true);
+  const [playing, setPlaying] = useState(true);
+  const [ready, setReady] = useState(false);
+
+  const onStateChange = useCallback((state: string) => {
+    if (state === 'ended') setPlaying(false);
+  }, []);
 
   const handleClose = () => {
-    setLoading(true);
+    setPlaying(false);
+    setReady(false);
     onClose();
   };
 
@@ -97,13 +67,25 @@ export default function YoutubePlayerModal({ videoId, title, visible, onClose }:
 
           {/* Player */}
           <View style={styles.playerWrap}>
-            {loading && (
+            {!ready && (
               <View style={styles.loader}>
                 <ActivityIndicator color={Colors.cyan} size="large" />
                 <Text style={styles.loaderText}>Carregando vídeo...</Text>
               </View>
             )}
-            <YoutubeEmbed videoId={videoId} onLoad={() => setLoading(false)} />
+            <YoutubePlayer
+              height={PLAYER_H}
+              videoId={videoId}
+              play={playing}
+              onChangeState={onStateChange}
+              onReady={() => setReady(true)}
+              webViewStyle={{ opacity: ready ? 1 : 0 }}
+              initialPlayerParams={{
+                modestbranding: true,
+                rel: false,
+                controls: true,
+              }}
+            />
           </View>
 
           {/* Footer */}
@@ -190,10 +172,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#000',
     marginBottom: 16,
-  },
-  webview: {
-    flex: 1,
-    backgroundColor: '#000',
   },
   loader: {
     ...StyleSheet.absoluteFillObject,

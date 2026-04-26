@@ -12,7 +12,7 @@ import HomeScreen from '../screens/HomeScreen';
 import EmpresasScreen from '../screens/EmpresasScreen';
 import SCIPScreen from '../screens/SCIPScreen';
 import CursosScreen from '../screens/CursosScreen';
-import ComunidadeScreen from '../screens/ComunidadeScreen';
+import FeedScreen from '../screens/FeedScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,7 +22,7 @@ const ICONS: Record<string, [string, string]> = {
   Empresas:   ['business',    'business-outline'],
   SCIP:       ['layers',      'layers-outline'],
   Cursos:     ['play-circle', 'play-circle-outline'],
-  Comunidade: ['people',      'people-outline'],
+  Comunidade: ['grid',        'grid-outline'],
 };
 
 // ─── Animated Tab Item ────────────────────────────────────────────────────────
@@ -57,7 +57,7 @@ function CustomTabBar({ state, navigation }: any) {
   const { t } = useLanguage();
 
   const icons: { [key: string]: (color: string, focused: boolean) => JSX.Element } = {
-    Home:       (color, f) => <Ionicons name={f ? ICONS.Home[0] : ICONS.Home[1] as any} size={24} color={color} />,
+    Home: (color, f) => <Ionicons name={f ? ICONS.Home[0] : ICONS.Home[1] as any} size={24} color={color} />,
     Empresas:   (color, f) => <Ionicons name={f ? ICONS.Empresas[0] : ICONS.Empresas[1] as any} size={24} color={color} />,
     SCIP:       (color, f) => <Text style={{ fontFamily: 'Inter_700Bold', fontSize: 13, color: Colors.white, letterSpacing: 0.5 }}>SCIP</Text>,
     Cursos:     (color, f) => <Ionicons name={f ? ICONS.Cursos[0] : ICONS.Cursos[1] as any} size={24} color={color} />,
@@ -142,7 +142,7 @@ export default function TabNavigator() {
       <Tab.Screen name="Empresas" component={EmpresasScreen} />
       <Tab.Screen name="SCIP" component={SCIPScreen} />
       <Tab.Screen name="Cursos" component={CursosScreen} />
-      <Tab.Screen name="Comunidade" component={ComunidadeScreen} />
+      <Tab.Screen name="Comunidade" component={FeedScreen} />
     </Tab.Navigator>
   );
 }

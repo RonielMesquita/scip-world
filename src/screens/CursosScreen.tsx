@@ -122,10 +122,10 @@ function HeroBanner({ onWatch, onDetails }: { onWatch: () => void; onDetails?: (
   }, []);
 
   return (
-    <View style={[styles.heroWrap, { height: HERO_H + insets.top }]}>
+    <View style={[styles.heroWrap, { height: HERO_H }]}>
       <Image
         source={HERO_IMAGE}
-        style={{ width: SW, height: HERO_H + insets.top }}
+        style={{ width: SW, height: HERO_H }}
         resizeMode="stretch"
       />
       <Grad
@@ -133,7 +133,7 @@ function HeroBanner({ onWatch, onDetails }: { onWatch: () => void; onDetails?: (
         style={StyleSheet.absoluteFill}
       />
 
-      <View style={[styles.heroContent, { paddingTop: insets.top + 16 }]}>
+      <View style={[styles.heroContent, { paddingTop: 16 }]}>
         <TouchableOpacity style={styles.heroWatchBtn} onPress={onWatch} activeOpacity={0.88}>
           <Text style={styles.heroWatchIcon}>▶</Text>
           <Text style={styles.heroWatchText}>{t('cursos.watchNow')}</Text>
@@ -278,6 +278,7 @@ function CategoryPills({ active, onChange, categories }: { active: string; onCha
 
 // ─── Main Screen ───────────────────────────────────────────────────────────────
 export default function CursosScreen() {
+  const insets = useSafeAreaInsets();
   const { opacity, translateY } = useEntryAnimation();
   const { t } = useLanguage();
   const [playerVideo, setPlayerVideo] = useState<{ id: string; title: string; thumb: string } | null>(null);
@@ -305,7 +306,7 @@ export default function CursosScreen() {
       <Animated.ScrollView
         style={[{ opacity, transform: [{ translateY }] }]}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top }]}
       >
         <HeroBanner
           onWatch={() => openPlayer(PROJECT_OF_MONTH.youtubeId, PROJECT_OF_MONTH.title, PROJECT_OF_MONTH.thumbnail)}
@@ -331,12 +332,14 @@ export default function CursosScreen() {
         <View style={{ height: 110 }} />
       </Animated.ScrollView>
 
-      <YoutubePlayerModal
-        visible={!!playerVideo}
-        videoId={playerVideo?.id ?? ''}
-        title={playerVideo?.title ?? ''}
-        onClose={closePlayer}
-      />
+      {playerVideo && (
+        <YoutubePlayerModal
+          visible={true}
+          videoId={playerVideo.id}
+          title={playerVideo.title}
+          onClose={closePlayer}
+        />
+      )}
     </View>
   );
 }

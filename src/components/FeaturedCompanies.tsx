@@ -107,7 +107,7 @@ export default function FeaturedCompanies({ onCompanyPress }: FeaturedCompaniesP
       </View>
 
       <FlatList
-        data={COMPANIES.slice(0, 4)}
+        data={COMPANIES.slice(0, 5)}
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}

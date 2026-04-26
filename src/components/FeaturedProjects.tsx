@@ -104,7 +104,7 @@ export default function FeaturedProjects({ onProjectPress }: FeaturedProjectsPro
             <Text style={styles.sectionSubtitle}>{t('featured.projectsSubtitle')}</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.viewAll} onPress={() => navigation.getParent<any>()?.navigate('Estimar')}>
+        <TouchableOpacity style={styles.viewAll} onPress={() => (navigation as any).navigate('Empresas')}>
           <Text style={styles.viewAllText}>{t('featured.seeAll')}</Text>
         </TouchableOpacity>
       </View>

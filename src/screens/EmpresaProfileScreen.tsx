@@ -8,7 +8,6 @@ import {
   StatusBar,
   ImageBackground,
   FlatList,
-  Linking,
   Platform,
   Dimensions,
   Share,
@@ -22,6 +21,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../constants/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import LeadFormModal from '../components/LeadFormModal';
 
 type ProfileRoute = RouteProp<RootStackParamList, 'EmpresaProfile'>;
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
@@ -71,14 +72,11 @@ export default function EmpresaProfileScreen() {
   const navigation = useNavigation<NavProp>();
   const route = useRoute<ProfileRoute>();
   const { company } = route.params;
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('Projetos');
   const [showAllProjects, setShowAllProjects] = useState(false);
+  const [showLeadForm, setShowLeadForm] = useState(false);
   const tabLabels: string[] = t('empresaProfile.tabs');
-
-  const handleWhatsApp = () => {
-    const msg = encodeURIComponent(t('empresaProfile.whatsappMsg').replace('{name}', company.name));
-    Linking.openURL(`https://wa.me/${company.phone.replace(/\D/g, '')}?text=${msg}`);
-  };
 
   const handleShare = async () => {
     try {
@@ -398,22 +396,25 @@ export default function EmpresaProfileScreen() {
         </View>
       </Modal>
 
+      <LeadFormModal
+        visible={showLeadForm}
+        onClose={() => setShowLeadForm(false)}
+        companyId={company.id}
+        companyName={company.name}
+        user={user}
+      />
+
       {/* Fixed Bottom CTA */}
       <View style={[styles.bottomCTA, { paddingBottom: insets.bottom + 12 }]}>
         <Grad
           colors={['rgba(11,15,26,0)', 'rgba(4,8,15,0.85)']}
           style={[StyleSheet.absoluteFill, { top: -20 }]}
         />
-        <View style={styles.ctaRow}>
-          <TouchableOpacity style={styles.whatsappCTA} onPress={handleWhatsApp} activeOpacity={0.85}>
-            <Grad colors={['#25D366', '#128C7E']} style={StyleSheet.absoluteFill} borderRadius={14} />
-            <Text style={styles.whatsappCTAText}>💬 WhatsApp</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.orcamentoCTA} activeOpacity={0.85}>
-            <Grad colors={Colors.gradients.premium} style={StyleSheet.absoluteFill} borderRadius={14} />
-            <Text style={styles.orcamentoCTAText}>{t('empresaProfile.requestQuote')}</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.orcamentoCTA} activeOpacity={0.85} onPress={() => setShowLeadForm(true)}>
+          <Grad colors={Colors.gradients.premium} style={StyleSheet.absoluteFill} borderRadius={14} />
+          <Ionicons name="document-text-outline" size={18} color={Colors.white} />
+          <Text style={styles.orcamentoCTAText}>{t('empresaProfile.requestQuote')}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -680,20 +681,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 20,
   },
-  ctaRow: { flexDirection: 'row', gap: 10 },
-  whatsappCTA: {
-    width: 120,
-    height: 50,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  whatsappCTAText: { fontFamily: 'Inter_500Medium', fontSize: 14, color: Colors.white, zIndex: 1 },
   orcamentoCTA: {
     flex: 1,
-    height: 50,
+    height: 52,
     borderRadius: 14,
+    flexDirection: 'row',
+    gap: 8,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

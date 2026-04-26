@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,10 @@ import {
   Switch,
   Linking,
   Alert,
+  KeyboardAvoidingView,
+  Keyboard,
+  Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useWatchHistory } from '../contexts/WatchHistoryContext';
@@ -22,8 +26,12 @@ import { useNavigation } from '@react-navigation/native';
 import Grad from '../components/Grad';
 import Colors from '../constants/colors';
 import { useAuth } from '../contexts/AuthContext';
+import CreatePostModal from '../components/CreatePostModal';
+import LeadUnlockModal from '../components/LeadUnlockModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Language, LANGUAGE_LABELS } from '../i18n/translations';
+import { useCompanyLeads, useUserLeads, Lead } from '../hooks/useLeads';
+import { useLeadsNotification } from '../contexts/LeadsNotificationContext';
 
 // ─── Become Pro Modal ─────────────────────────────────────────────────────────
 const PRO_ROLES = [
@@ -36,9 +44,8 @@ const PRO_ROLES = [
 ];
 
 function BecomeProModal({
-  visible, onClose, onSave,
-}: { visible: boolean; onClose: () => void; onSave: (data: any) => void }) {
-  const navigation = useNavigation<any>();
+  visible, onClose, onSave, navigation,
+}: { visible: boolean; onClose: () => void; onSave: (data: any) => void; navigation: any }) {
   const { t } = useLanguage();
   const [businessName, setBusinessName] = useState('');
   const [whatsapp, setWhatsapp]         = useState('');
@@ -62,95 +69,114 @@ function BecomeProModal({
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={modal.overlay}>
-        <View style={[modal.sheet, { paddingBottom: 40 }]}>
-          <Grad colors={['#0D1F42', '#04080F']} style={StyleSheet.absoluteFill} borderRadius={24} />
-          <View style={modal.handle} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={modal.overlay}>
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View style={[modal.sheet, { paddingBottom: 40 }]}>
+                <Grad colors={['#0D1F42', '#04080F']} style={StyleSheet.absoluteFill} borderRadius={24} />
+                <View style={modal.handle} />
 
-          {/* Header */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <View style={proModal.badge}>
-              <Grad colors={['#FFB300', '#FF6B00']} style={StyleSheet.absoluteFill} borderRadius={10} />
-              <Ionicons name="rocket-outline" size={22} color="#04080F" />
-            </View>
-            <View>
-              <Text style={modal.title}>{t('profile.proModal.title')}</Text>
-              <Text style={[modal.subtitle, { marginBottom: 0 }]}>{t('profile.proModal.subtitle')}</Text>
-            </View>
-          </View>
-
-          {/* Tipo de negócio */}
-          <View style={modal.fieldGroup}>
-            <Text style={modal.fieldLabel}>{t('profile.proModal.profileType')}</Text>
-            <TouchableOpacity
-              style={modal.inputWrap}
-              onPress={() => setShowRoles(!showRoles)}
-              activeOpacity={0.8}
-            >
-              {(() => {
-                const selected = PRO_ROLES.find(r => r.label === proRole) ?? PRO_ROLES[0];
-                return (
-                  <View style={[modal.iconBox, { backgroundColor: selected.color + '18' }]}>
-                    <Ionicons name={selected.ionicon as any} size={15} color={selected.color} />
-                  </View>
-                );
-              })()}
-              <Text style={[modal.input, { color: Colors.white }]}>{proRole}</Text>
-              <Ionicons name={showRoles ? 'chevron-up' : 'chevron-down'} size={14} color={Colors.textDim} />
-            </TouchableOpacity>
-            {showRoles && (
-              <View style={proModal.dropdown}>
-                <Grad colors={['rgba(11,28,61,0.99)', 'rgba(4,8,15,0.99)']} style={StyleSheet.absoluteFill} borderRadius={14} />
-                {PRO_ROLES.map((r) => (
-                  <TouchableOpacity
-                    key={r.label}
-                    style={proModal.roleOption}
-                    onPress={() => { setProRole(r.label); setShowRoles(false); }}
-                    activeOpacity={0.8}
-                  >
-                    <View style={[proModal.roleIconBox, { backgroundColor: r.color + '18' }]}>
-                      <Ionicons name={r.ionicon as any} size={14} color={r.color} />
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                  bounces={false}
+                >
+                  {/* Header */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                    <View style={proModal.badge}>
+                      <Grad colors={['#FFB300', '#FF6B00']} style={StyleSheet.absoluteFill} borderRadius={10} />
+                      <Ionicons name="rocket-outline" size={22} color="#04080F" />
                     </View>
-                    <Text style={[proModal.roleText, proRole === r.label && { color: Colors.amber }]}>{r.label}</Text>
-                    {proRole === r.label && <Ionicons name="checkmark" size={14} color={Colors.amber} />}
+                    <View>
+                      <Text style={modal.title}>{t('profile.proModal.title')}</Text>
+                      <Text style={[modal.subtitle, { marginBottom: 0 }]}>{t('profile.proModal.subtitle')}</Text>
+                    </View>
+                  </View>
+
+                  {/* Tipo de negócio */}
+                  <View style={modal.fieldGroup}>
+                    <Text style={modal.fieldLabel}>{t('profile.proModal.profileType')}</Text>
+                    <TouchableOpacity
+                      style={modal.inputWrap}
+                      onPress={() => { Keyboard.dismiss(); setShowRoles(!showRoles); }}
+                      activeOpacity={0.8}
+                    >
+                      {(() => {
+                        const selected = PRO_ROLES.find(r => r.label === proRole) ?? PRO_ROLES[0];
+                        return (
+                          <View style={[modal.iconBox, { backgroundColor: selected.color + '18' }]}>
+                            <Ionicons name={selected.ionicon as any} size={15} color={selected.color} />
+                          </View>
+                        );
+                      })()}
+                      <Text style={[modal.input, { color: Colors.white }]}>{proRole}</Text>
+                      <Ionicons name={showRoles ? 'chevron-up' : 'chevron-down'} size={14} color={Colors.textDim} />
+                    </TouchableOpacity>
+                    {showRoles && (
+                      <View style={proModal.dropdown}>
+                        <Grad colors={['rgba(11,28,61,0.99)', 'rgba(4,8,15,0.99)']} style={StyleSheet.absoluteFill} borderRadius={14} />
+                        {PRO_ROLES.map((r) => (
+                          <TouchableOpacity
+                            key={r.label}
+                            style={proModal.roleOption}
+                            onPress={() => { setProRole(r.label); setShowRoles(false); }}
+                            activeOpacity={0.8}
+                          >
+                            <View style={[proModal.roleIconBox, { backgroundColor: r.color + '18' }]}>
+                              <Ionicons name={r.ionicon as any} size={14} color={r.color} />
+                            </View>
+                            <Text style={[proModal.roleText, proRole === r.label && { color: Colors.amber }]}>{r.label}</Text>
+                            {proRole === r.label && <Ionicons name="checkmark" size={14} color={Colors.amber} />}
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+
+                  {/* Campos de texto */}
+                  {[
+                    { label: t('profile.proModal.businessName'), ionicon: 'business-outline', color: Colors.cyan,   value: businessName, onChange: setBusinessName, placeholder: t('profile.proModal.businessNamePlaceholder'), kb: 'default' },
+                    { label: t('profile.proModal.whatsapp'),     ionicon: 'logo-whatsapp',    color: '#25D366',     value: whatsapp,     onChange: setWhatsapp,     placeholder: t('profile.proModal.whatsappPlaceholder'),     kb: 'phone-pad' },
+                    { label: t('profile.proModal.cityState'),    ionicon: 'location-outline', color: Colors.purple, value: city,         onChange: setCity,         placeholder: t('profile.proModal.cityStatePlaceholder'),    kb: 'default' },
+                  ].map((f) => (
+                    <View key={f.label} style={modal.fieldGroup}>
+                      <Text style={modal.fieldLabel}>{f.label}</Text>
+                      <View style={modal.inputWrap}>
+                        <View style={[modal.iconBox, { backgroundColor: f.color + '18' }]}>
+                          <Ionicons name={f.ionicon as any} size={15} color={f.color} />
+                        </View>
+                        <TextInput
+                          style={modal.input}
+                          placeholder={f.placeholder}
+                          placeholderTextColor={Colors.textFaded}
+                          value={f.value}
+                          onChangeText={f.onChange}
+                          keyboardType={f.kb as any}
+                          returnKeyType="done"
+                          onSubmitEditing={Keyboard.dismiss}
+                          blurOnSubmit={true}
+                        />
+                      </View>
+                    </View>
+                  ))}
+
+                  <TouchableOpacity style={[modal.saveBtn, { marginTop: 8 }]} onPress={handleSave} activeOpacity={0.88}>
+                    <Grad colors={['#FFB300', '#FF6B00']} style={StyleSheet.absoluteFill} borderRadius={14} />
+                    <Text style={modal.saveBtnText}>{t('profile.proModal.activate')}</Text>
                   </TouchableOpacity>
-                ))}
+                  <TouchableOpacity style={modal.cancelBtn} onPress={onClose} activeOpacity={0.8}>
+                    <Text style={modal.cancelText}>{t('profile.proModal.later')}</Text>
+                  </TouchableOpacity>
+                </ScrollView>
               </View>
-            )}
+            </TouchableWithoutFeedback>
           </View>
-
-          {[
-            { label: t('profile.proModal.businessName'),    ionicon: 'business-outline',  color: Colors.cyan,   value: businessName, onChange: setBusinessName, placeholder: t('profile.proModal.businessNamePlaceholder') },
-            { label: t('profile.proModal.whatsapp'), ionicon: 'logo-whatsapp',     color: '#25D366',     value: whatsapp,     onChange: setWhatsapp,     placeholder: t('profile.proModal.whatsappPlaceholder'), kb: 'phone-pad' },
-            { label: t('profile.proModal.cityState'),    ionicon: 'location-outline',  color: Colors.purple, value: city,         onChange: setCity,         placeholder: t('profile.proModal.cityStatePlaceholder') },
-          ].map((f) => (
-            <View key={f.label} style={modal.fieldGroup}>
-              <Text style={modal.fieldLabel}>{f.label}</Text>
-              <View style={modal.inputWrap}>
-                <View style={[modal.iconBox, { backgroundColor: f.color + '18' }]}>
-                  <Ionicons name={f.ionicon as any} size={15} color={f.color} />
-                </View>
-                <TextInput
-                  style={modal.input}
-                  placeholder={f.placeholder}
-                  placeholderTextColor={Colors.textFaded}
-                  value={f.value}
-                  onChangeText={f.onChange}
-                  keyboardType={(f as any).kb}
-                />
-              </View>
-            </View>
-          ))}
-
-          <TouchableOpacity style={[modal.saveBtn, { marginTop: 8 }]} onPress={handleSave} activeOpacity={0.88}>
-            <Grad colors={['#FFB300', '#FF6B00']} style={StyleSheet.absoluteFill} borderRadius={14} />
-            <Text style={modal.saveBtnText}>{t('profile.proModal.activate')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={modal.cancelBtn} onPress={onClose} activeOpacity={0.8}>
-            <Text style={modal.cancelText}>{t('profile.proModal.later')}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -421,10 +447,16 @@ function AboutModal({ visible, onClose }: { visible: boolean; onClose: () => voi
 
 // ─── Company Dashboard ────────────────────────────────────────────────────────
 function CompanyDashboard({ insets, navigation, myCompany, myProjects, updateCompany, removeProject, user, logout, t, language, setLanguage }: any) {
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [showNotifModal,  setShowNotifModal]  = useState(false);
-  const [showEditCompany, setShowEditCompany] = useState(false);
-  const [showLangModal,   setShowLangModal]   = useState(false);
+  const [showLogoutModal,   setShowLogoutModal]   = useState(false);
+  const [showNotifModal,    setShowNotifModal]     = useState(false);
+  const [showEditCompany,   setShowEditCompany]    = useState(false);
+  const [showLangModal,     setShowLangModal]      = useState(false);
+  const [showCreatePost,    setShowCreatePost]     = useState(false);
+  const [selectedLead,      setSelectedLead]       = useState<Lead | null>(null);
+  const { leads, credits, newCount, markViewed, unlockLead } = useCompanyLeads(myCompany?.id);
+  const { clearBadge } = useLeadsNotification();
+
+  useEffect(() => { clearBadge(); }, []);
   const { LANGUAGE_LABELS: LL } = require('../i18n/translations');
   const LANGS = ['pt', 'en', 'es'];
 
@@ -497,6 +529,17 @@ function CompanyDashboard({ insets, navigation, myCompany, myProjects, updateCom
               <Text style={[styles.editBtnText, { color: Colors.cyan }]}>Ver público</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Nova Publicação */}
+          <TouchableOpacity
+            style={[styles.editBtn, { marginTop: 10, justifyContent: 'center', gap: 8 }]}
+            activeOpacity={0.85}
+            onPress={() => setShowCreatePost(true)}
+          >
+            <Grad colors={Colors.gradients.cyan} style={StyleSheet.absoluteFill} borderRadius={999} />
+            <Ionicons name="add-circle-outline" size={16} color={Colors.white} />
+            <Text style={[styles.editBtnText, { color: Colors.white }]}>Nova Publicação</Text>
+          </TouchableOpacity>
         </View>
 
         {/* ── Stats ── */}
@@ -515,6 +558,113 @@ function CompanyDashboard({ insets, navigation, myCompany, myProjects, updateCom
               <Text style={styles.statLabel}>{s.label}</Text>
             </View>
           ))}
+        </View>
+
+        {/* ── Leads ── */}
+        <View style={styles.section}>
+          <View style={styles.sectionTitleRow}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Text style={styles.sectionTitle}>LEADS</Text>
+              {newCount > 0 && (
+                <View style={ld.newBadge}>
+                  <Grad colors={['#FF4D9D', '#FF6B00']} style={StyleSheet.absoluteFill} borderRadius={999} />
+                  <Text style={ld.newBadgeText}>{newCount} novo{newCount > 1 ? 's' : ''}</Text>
+                </View>
+              )}
+            </View>
+            <Text style={[styles.clearHistory, { color: Colors.textFaded }]}>
+              {leads.length} total
+            </Text>
+          </View>
+
+          {leads.length === 0 ? (
+            <View style={ld.emptyLeads}>
+              <Grad colors={['rgba(76,201,240,0.05)', 'rgba(123,97,255,0.03)']} style={StyleSheet.absoluteFill} borderRadius={16} />
+              <Ionicons name="mail-open-outline" size={28} color={Colors.textDim} />
+              <Text style={ld.emptyTitle}>Nenhum lead ainda</Text>
+              <Text style={ld.emptySub}>Solicitações de clientes aparecerão aqui</Text>
+            </View>
+          ) : (
+            <View style={{ gap: 10 }}>
+              {leads.map((lead) => (
+                <TouchableOpacity
+                  key={lead.id}
+                  style={ld.leadCard}
+                  activeOpacity={0.85}
+                  onPress={() => {
+                    markViewed(lead.id);
+                    setSelectedLead(lead);
+                  }}
+                >
+                  <Grad
+                    colors={lead.status === 'new'
+                      ? ['rgba(76,201,240,0.07)', 'rgba(76,201,240,0.03)']
+                      : ['rgba(11,28,61,0.95)', 'rgba(7,13,26,0.98)']}
+                    style={StyleSheet.absoluteFill}
+                    borderRadius={16}
+                  />
+
+                  {/* Status badge */}
+                  <View style={ld.cardHeader}>
+                    <View style={[ld.statusDot, {
+                      backgroundColor:
+                        lead.status === 'new' ? '#FF4D9D'
+                        : lead.status === 'viewed' ? Colors.amber
+                        : Colors.cyan,
+                    }]} />
+                    <Text style={ld.statusText}>
+                      {lead.status === 'new' ? 'NOVO'
+                       : lead.status === 'viewed' ? 'VISTO'
+                       : 'DESBLOQUEADO'}
+                    </Text>
+                    <Text style={ld.leadDate}>
+                      {new Date(lead.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                    </Text>
+                  </View>
+
+                  {/* Preview */}
+                  <View style={ld.cardBody}>
+                    <View style={{ flex: 1 }}>
+                      {/* Nome borrado se não desbloqueado */}
+                      {lead.unlocked ? (
+                        <Text style={ld.leadName}>{lead.user_name}</Text>
+                      ) : (
+                        <View style={ld.blurredName}>
+                          <Text style={ld.blurredText}>●●●●●●●●●</Text>
+                        </View>
+                      )}
+                      <View style={{ flexDirection: 'row', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
+                        {lead.project_type && <View style={ld.tag}><Text style={ld.tagText}>{lead.project_type}</Text></View>}
+                        {lead.city && <View style={ld.tag}><Text style={ld.tagText}>{lead.city}</Text></View>}
+                        {lead.area_m2 && <View style={ld.tag}><Text style={ld.tagText}>{lead.area_m2} m²</Text></View>}
+                      </View>
+                      {lead.description ? (
+                        <Text style={ld.leadDesc} numberOfLines={2}>{lead.description}</Text>
+                      ) : null}
+                    </View>
+
+                    {/* Contato ou cadeado */}
+                    {lead.unlocked ? (
+                      <View style={ld.contactBox}>
+                        <Ionicons name="call-outline" size={13} color={Colors.cyan} />
+                        <Text style={ld.contactText}>{lead.user_phone}</Text>
+                      </View>
+                    ) : (
+                      <TouchableOpacity
+                        style={ld.unlockBtn}
+                        activeOpacity={0.85}
+                        onPress={() => { markViewed(lead.id); setSelectedLead(lead); }}
+                      >
+                        <Grad colors={Colors.gradients.premium} style={StyleSheet.absoluteFill} borderRadius={10} />
+                        <Ionicons name="lock-open-outline" size={13} color={Colors.white} />
+                        <Text style={ld.unlockBtnText}>Ver contato</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* ── Serviços ── */}
@@ -615,6 +765,27 @@ function CompanyDashboard({ insets, navigation, myCompany, myProjects, updateCom
 
       <NotificationsModal visible={showNotifModal} onClose={() => setShowNotifModal(false)} />
 
+      {/* Create Post Modal */}
+      <CreatePostModal
+        visible={showCreatePost}
+        onClose={() => setShowCreatePost(false)}
+        user={user}
+        company={myCompany}
+      />
+
+      {/* Lead Unlock Modal */}
+      <LeadUnlockModal
+        visible={!!selectedLead}
+        onClose={() => setSelectedLead(null)}
+        lead={selectedLead}
+        credits={credits}
+        onUnlock={async (id) => {
+          const ok = await unlockLead(id);
+          if (ok) setSelectedLead(null);
+          return ok;
+        }}
+      />
+
       {/* Logout Modal */}
       <Modal visible={showLogoutModal} transparent animationType="fade" onRequestClose={() => setShowLogoutModal(false)}>
         <View style={styles.modalOverlay}>
@@ -654,6 +825,37 @@ function CompanyDashboard({ insets, navigation, myCompany, myProjects, updateCom
   );
 }
 
+const ld = StyleSheet.create({
+  // Empresa — seção leads
+  newBadge:       { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, overflow: 'hidden' },
+  newBadgeText:   { fontFamily: 'Inter_700Bold', fontSize: 10, color: Colors.white },
+  emptyLeads:     { height: 100, borderRadius: 16, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)', borderStyle: 'dashed' },
+  emptyTitle:     { fontFamily: 'Inter_500Medium', fontSize: 14, color: Colors.textMuted },
+  emptySub:       { fontFamily: 'Inter_400Regular', fontSize: 11, color: Colors.textDim },
+  leadCard:       { borderRadius: 16, overflow: 'hidden', padding: 14, borderWidth: 1, borderColor: 'rgba(76,201,240,0.1)' },
+  cardHeader:     { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
+  statusDot:      { width: 7, height: 7, borderRadius: 4 },
+  statusText:     { fontFamily: 'Inter_700Bold', fontSize: 10, color: Colors.textMuted, letterSpacing: 0.5, flex: 1 },
+  leadDate:       { fontFamily: 'Inter_400Regular', fontSize: 11, color: Colors.textFaded },
+  cardBody:       { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  leadName:       { fontFamily: 'Inter_700Bold', fontSize: 14, color: Colors.white },
+  blurredName:    { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, alignSelf: 'flex-start' },
+  blurredText:    { fontFamily: 'Inter_700Bold', fontSize: 13, color: 'rgba(255,255,255,0.15)', letterSpacing: 2 },
+  tag:            { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
+  tagText:        { fontFamily: 'Inter_400Regular', fontSize: 10, color: Colors.textMuted },
+  leadDesc:       { fontFamily: 'Inter_400Regular', fontSize: 12, color: Colors.textFaded, marginTop: 8, lineHeight: 17 },
+  contactBox:     { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(76,201,240,0.1)', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1, borderColor: 'rgba(76,201,240,0.2)' },
+  contactText:    { fontFamily: 'Inter_600SemiBold', fontSize: 12, color: Colors.cyan },
+  unlockBtn:      { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, overflow: 'hidden' },
+  unlockBtnText:  { fontFamily: 'Inter_700Bold', fontSize: 11, color: Colors.white },
+  // Usuário — minhas solicitações
+  userLeadCard:   { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 14, overflow: 'hidden', padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
+  userLeadCompany:{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: Colors.white },
+  userLeadDate:   { fontFamily: 'Inter_400Regular', fontSize: 11, color: Colors.textFaded, marginTop: 6 },
+  userStatusBadge:{ flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
+  userStatusText: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
+});
+
 const cd = StyleSheet.create({
   verifiedBadge: { marginTop: 2 },
   statIcon:      { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
@@ -673,6 +875,302 @@ const cd = StyleSheet.create({
   projectDesc:   { fontFamily: 'Inter_400Regular', fontSize: 12, color: Colors.textMuted, marginTop: 6, lineHeight: 17 },
 });
 
+// ─── Request Detail Modal ─────────────────────────────────────────────────────
+function RequestDetailModal({ lead, onClose }: { lead: Lead | null; onClose: () => void }) {
+  const insets = useSafeAreaInsets();
+  if (!lead) return null;
+
+  const fmtDate = (iso: string | null) =>
+    iso ? new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null;
+
+  const hasReply = !!lead.company_reply;
+  const isUnlocked = lead.status === 'unlocked';
+  const isViewed   = lead.status === 'viewed' || isUnlocked;
+
+  const timeline = [
+    { label: 'Solicitação enviada',          date: fmtDate(lead.created_at), done: true,       color: Colors.cyan   },
+    { label: 'Visualizada pela empresa',     date: fmtDate(lead.viewed_at),  done: isViewed,   color: Colors.amber  },
+    { label: 'Empresa demonstrou interesse', date: fmtDate(lead.unlocked_at),done: isUnlocked, color: '#00C48C'     },
+  ];
+
+  const COMPANY_COLORS: Record<string, string> = {
+    c1: Colors.cyan, c2: Colors.purple, c3: Colors.blue,
+    c4: Colors.amber, c5: '#00C48C',
+  };
+  const companyColor = COMPANY_COLORS[lead.company_id] ?? Colors.cyan;
+  const initial = lead.company_name?.charAt(0).toUpperCase() ?? '?';
+
+  return (
+    <Modal visible={!!lead} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={rd.overlay}>
+        <View style={[rd.sheet, { paddingBottom: insets.bottom + 20 }]}>
+          <Grad colors={['#0D1F42', '#04080F']} style={StyleSheet.absoluteFill} borderRadius={28} />
+          <View style={rd.handle} />
+
+          {/* Company header */}
+          <View style={rd.companyHeader}>
+            <View style={[rd.companyAvatar, { backgroundColor: companyColor + '20', borderColor: companyColor + '50' }]}>
+              <Text style={[rd.companyAvatarText, { color: companyColor }]}>{initial}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={rd.companyName}>{lead.company_name}</Text>
+              <Text style={rd.companySub}>
+                {new Date(lead.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={onClose} style={rd.closeBtn} activeOpacity={0.7}>
+              <Ionicons name="close" size={18} color={Colors.textMuted} />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView showsVerticalScrollIndicator={false}>
+
+            {/* Reply banner (if company replied) */}
+            {hasReply && (
+              <View style={rd.replyBanner}>
+                <Grad colors={['rgba(0,196,140,0.12)', 'rgba(0,196,140,0.05)']} style={StyleSheet.absoluteFill} borderRadius={16} />
+                <View style={rd.replyBannerHeader}>
+                  <Ionicons name="chatbubble-ellipses-outline" size={16} color="#00C48C" />
+                  <Text style={rd.replyBannerLabel}>{lead.company_name} respondeu</Text>
+                  {lead.replied_at && <Text style={rd.replyBannerDate}>{fmtDate(lead.replied_at)}</Text>}
+                </View>
+                <Text style={rd.replyBannerText}>{lead.company_reply}</Text>
+              </View>
+            )}
+
+            {/* Status banner when unlocked but no reply yet */}
+            {isUnlocked && !hasReply && (
+              <View style={[rd.replyBanner, { borderColor: 'rgba(0,196,140,0.2)' }]}>
+                <Grad colors={['rgba(0,196,140,0.08)', 'rgba(0,196,140,0.03)']} style={StyleSheet.absoluteFill} borderRadius={16} />
+                <View style={rd.replyBannerHeader}>
+                  <Ionicons name="checkmark-circle-outline" size={16} color="#00C48C" />
+                  <Text style={rd.replyBannerLabel}>Empresa demonstrou interesse</Text>
+                </View>
+                <Text style={[rd.replyBannerText, { color: Colors.textMuted }]}>
+                  Aguarde o contato da empresa pelo telefone ou e-mail que você forneceu.
+                </Text>
+              </View>
+            )}
+
+            {/* Timeline */}
+            <Text style={rd.sectionLabel}>ANDAMENTO</Text>
+            <View style={rd.timeline}>
+              {timeline.map((step, i) => (
+                <View key={i} style={rd.timelineRow}>
+                  <View style={rd.timelineLeft}>
+                    <View style={[rd.timelineDot, { backgroundColor: step.done ? step.color : 'rgba(255,255,255,0.1)', borderColor: step.done ? step.color + '50' : 'transparent' }]}>
+                      {step.done && <Ionicons name="checkmark" size={10} color={Colors.bgDeep} />}
+                    </View>
+                    {i < timeline.length - 1 && (
+                      <View style={[rd.timelineLine, { backgroundColor: timeline[i + 1].done ? timeline[i].color + '40' : 'rgba(255,255,255,0.06)' }]} />
+                    )}
+                  </View>
+                  <View style={rd.timelineContent}>
+                    <Text style={[rd.timelineLabel, step.done && { color: Colors.white }]}>{step.label}</Text>
+                    {step.date && <Text style={rd.timelineDate}>{step.date}</Text>}
+                  </View>
+                </View>
+              ))}
+            </View>
+
+            {/* Details of the request sent */}
+            <Text style={[rd.sectionLabel, { marginTop: 20 }]}>SUA SOLICITAÇÃO</Text>
+            <View style={rd.detailCard}>
+              <Grad colors={['rgba(11,28,61,0.95)', 'rgba(7,13,26,0.98)']} style={StyleSheet.absoluteFill} borderRadius={16} />
+              {[
+                lead.project_type && { icon: 'construct-outline', color: Colors.amber,  label: 'Tipo', value: lead.project_type },
+                lead.area_m2      && { icon: 'expand-outline',    color: Colors.cyan,   label: 'Área', value: `${lead.area_m2} m²` },
+                lead.city         && { icon: 'location-outline',  color: Colors.purple, label: 'Cidade', value: lead.city },
+                lead.deadline     && { icon: 'time-outline',      color: Colors.blue,   label: 'Prazo', value: lead.deadline },
+              ].filter(Boolean).map((row: any, i, arr) => (
+                <View key={i} style={[rd.detailRow, i < arr.length - 1 && rd.detailRowBorder]}>
+                  <View style={[rd.detailIcon, { backgroundColor: row.color + '15' }]}>
+                    <Ionicons name={row.icon} size={14} color={row.color} />
+                  </View>
+                  <Text style={rd.detailLabel}>{row.label}</Text>
+                  <Text style={rd.detailValue}>{row.value}</Text>
+                </View>
+              ))}
+              {lead.description && (
+                <View style={rd.detailDesc}>
+                  <Text style={rd.detailDescLabel}>Descrição</Text>
+                  <Text style={rd.detailDescText}>{lead.description}</Text>
+                </View>
+              )}
+            </View>
+
+            <View style={{ height: 8 }} />
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const rd = StyleSheet.create({
+  overlay:           { flex: 1, backgroundColor: 'rgba(4,8,15,0.85)', justifyContent: 'flex-end' },
+  sheet:             { borderTopLeftRadius: 28, borderTopRightRadius: 28, borderWidth: 1, borderColor: 'rgba(76,201,240,0.12)', paddingHorizontal: 16, paddingTop: 12, overflow: 'hidden', maxHeight: '90%' },
+  handle:            { width: 40, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.18)', alignSelf: 'center', marginBottom: 16 },
+  companyHeader:     { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
+  companyAvatar:     { width: 46, height: 46, borderRadius: 14, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  companyAvatarText: { fontFamily: 'Inter_700Bold', fontSize: 18 },
+  companyName:       { fontFamily: 'Inter_700Bold', fontSize: 16, color: Colors.white },
+  companySub:        { fontFamily: 'Inter_400Regular', fontSize: 12, color: Colors.textDim, marginTop: 2 },
+  closeBtn:          { width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(255,255,255,0.06)', alignItems: 'center', justifyContent: 'center' },
+  sectionLabel:      { fontFamily: 'Inter_700Bold', fontSize: 10, color: Colors.textDim, letterSpacing: 1, marginBottom: 12 },
+  // Reply banner
+  replyBanner:       { borderRadius: 16, borderWidth: 1, borderColor: 'rgba(0,196,140,0.25)', padding: 14, marginBottom: 20, overflow: 'hidden', gap: 8 },
+  replyBannerHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  replyBannerLabel:  { flex: 1, fontFamily: 'Inter_600SemiBold', fontSize: 13, color: '#00C48C' },
+  replyBannerDate:   { fontFamily: 'Inter_400Regular', fontSize: 11, color: Colors.textDim },
+  replyBannerText:   { fontFamily: 'Inter_400Regular', fontSize: 13, color: Colors.white, lineHeight: 20 },
+  // Timeline
+  timeline:          { gap: 0, marginBottom: 4 },
+  timelineRow:       { flexDirection: 'row', gap: 12 },
+  timelineLeft:      { alignItems: 'center', width: 20 },
+  timelineDot:       { width: 20, height: 20, borderRadius: 10, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  timelineLine:      { width: 2, flex: 1, minHeight: 16, marginVertical: 3 },
+  timelineContent:   { flex: 1, paddingBottom: 16, paddingTop: 2 },
+  timelineLabel:     { fontFamily: 'Inter_500Medium', fontSize: 13, color: Colors.textMuted },
+  timelineDate:      { fontFamily: 'Inter_400Regular', fontSize: 11, color: Colors.textDim, marginTop: 3 },
+  // Details card
+  detailCard:        { borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)', overflow: 'hidden' },
+  detailRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 12 },
+  detailRowBorder:   { borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
+  detailIcon:        { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  detailLabel:       { fontFamily: 'Inter_400Regular', fontSize: 12, color: Colors.textDim, width: 52 },
+  detailValue:       { flex: 1, fontFamily: 'Inter_500Medium', fontSize: 13, color: Colors.white },
+  detailDesc:        { padding: 14, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)', gap: 6 },
+  detailDescLabel:   { fontFamily: 'Inter_400Regular', fontSize: 12, color: Colors.textDim },
+  detailDescText:    { fontFamily: 'Inter_400Regular', fontSize: 13, color: Colors.white, lineHeight: 20 },
+});
+
+// ─── My Requests Inbox ────────────────────────────────────────────────────────
+function MyRequestsInbox({ userEmail }: { userEmail: string }) {
+  const { leads, loading } = useUserLeads(userEmail);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+
+  if (loading) return null;
+
+  const COMPANY_COLORS: Record<string, string> = {
+    c1: Colors.cyan, c2: Colors.purple, c3: Colors.blue,
+    c4: Colors.amber, c5: '#00C48C',
+  };
+
+  const statusCfg = (lead: Lead) => {
+    if (lead.company_reply)          return { label: 'Respondido',   color: '#00C48C',    icon: 'chatbubble-ellipses-outline' as const };
+    if (lead.status === 'unlocked')  return { label: 'Interesse',    color: '#00C48C',    icon: 'checkmark-circle-outline' as const };
+    if (lead.status === 'viewed')    return { label: 'Visualizado',  color: Colors.amber, icon: 'eye-outline' as const };
+    return                                  { label: 'Enviado',      color: Colors.textDim, icon: 'send-outline' as const };
+  };
+
+  const unreadCount = leads.filter((l) => l.company_reply || l.status === 'unlocked').length;
+
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionTitleRow}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={styles.sectionTitle}>CAIXA DE MENSAGENS</Text>
+          {unreadCount > 0 && (
+            <View style={inbox.badge}>
+              <Grad colors={['#00C48C', '#007A5C']} style={StyleSheet.absoluteFill} borderRadius={999} />
+              <Text style={inbox.badgeText}>{unreadCount}</Text>
+            </View>
+          )}
+        </View>
+        <Text style={[styles.clearHistory, { color: Colors.textDim }]}>{leads.length} enviada{leads.length !== 1 ? 's' : ''}</Text>
+      </View>
+
+      {leads.length === 0 ? (
+        <View style={inbox.empty}>
+          <Grad colors={['rgba(76,201,240,0.05)', 'rgba(123,97,255,0.03)']} style={StyleSheet.absoluteFill} borderRadius={16} />
+          <Ionicons name="mail-outline" size={28} color={Colors.textDim} />
+          <Text style={inbox.emptyTitle}>Nenhuma solicitação ainda</Text>
+          <Text style={inbox.emptySub}>Suas solicitações de orçamento aparecerão aqui</Text>
+        </View>
+      ) : (
+        <View style={{ gap: 8 }}>
+          {leads.map((lead) => {
+            const st = statusCfg(lead);
+            const companyColor = COMPANY_COLORS[lead.company_id] ?? Colors.cyan;
+            const initial = lead.company_name?.charAt(0).toUpperCase() ?? '?';
+            const hasNew = lead.company_reply || lead.status === 'unlocked';
+
+            return (
+              <TouchableOpacity
+                key={lead.id}
+                style={inbox.card}
+                activeOpacity={0.85}
+                onPress={() => setSelectedLead(lead)}
+              >
+                <Grad
+                  colors={hasNew
+                    ? ['rgba(0,196,140,0.07)', 'rgba(7,13,26,0.98)']
+                    : ['rgba(11,28,61,0.95)', 'rgba(7,13,26,0.98)']}
+                  style={StyleSheet.absoluteFill}
+                  borderRadius={16}
+                />
+                {hasNew && <View style={[inbox.newLine, { backgroundColor: '#00C48C' }]} />}
+
+                <View style={[inbox.avatar, { backgroundColor: companyColor + '18', borderColor: companyColor + '40' }]}>
+                  <Text style={[inbox.avatarText, { color: companyColor }]}>{initial}</Text>
+                </View>
+
+                <View style={{ flex: 1, gap: 4 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Text style={inbox.companyName} numberOfLines={1}>{lead.company_name}</Text>
+                    <Text style={inbox.date}>
+                      {new Date(lead.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                    </Text>
+                  </View>
+
+                  <Text style={inbox.subline} numberOfLines={1}>
+                    {[lead.project_type, lead.city, lead.area_m2 ? `${lead.area_m2} m²` : null].filter(Boolean).join(' · ')}
+                  </Text>
+
+                  {lead.company_reply ? (
+                    <Text style={inbox.replyPreview} numberOfLines={1}>
+                      ↩ {lead.company_reply}
+                    </Text>
+                  ) : lead.description ? (
+                    <Text style={inbox.descPreview} numberOfLines={1}>{lead.description}</Text>
+                  ) : null}
+                </View>
+
+                <View style={[inbox.statusBadge, { backgroundColor: st.color + '15', borderColor: st.color + '30' }]}>
+                  <Ionicons name={st.icon} size={12} color={st.color} />
+                  <Text style={[inbox.statusText, { color: st.color }]}>{st.label}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+
+      <RequestDetailModal lead={selectedLead} onClose={() => setSelectedLead(null)} />
+    </View>
+  );
+}
+
+const inbox = StyleSheet.create({
+  badge:       { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 999, overflow: 'hidden' },
+  badgeText:   { fontFamily: 'Inter_700Bold', fontSize: 10, color: Colors.white },
+  empty:       { height: 110, borderRadius: 16, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)', borderStyle: 'dashed' },
+  emptyTitle:  { fontFamily: 'Inter_500Medium', fontSize: 14, color: Colors.textMuted },
+  emptySub:    { fontFamily: 'Inter_400Regular', fontSize: 11, color: Colors.textDim, textAlign: 'center' },
+  card:        { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 16, overflow: 'hidden', padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
+  newLine:     { position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, borderRadius: 3 },
+  avatar:      { width: 44, height: 44, borderRadius: 13, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  avatarText:  { fontFamily: 'Inter_700Bold', fontSize: 17 },
+  companyName: { flex: 1, fontFamily: 'Inter_600SemiBold', fontSize: 14, color: Colors.white },
+  date:        { fontFamily: 'Inter_400Regular', fontSize: 11, color: Colors.textDim },
+  subline:     { fontFamily: 'Inter_400Regular', fontSize: 12, color: Colors.textMuted },
+  replyPreview:{ fontFamily: 'Inter_500Medium', fontSize: 12, color: '#00C48C' },
+  descPreview: { fontFamily: 'Inter_400Regular', fontSize: 12, color: Colors.textDim },
+  statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10, borderWidth: 1, flexShrink: 0 },
+  statusText:  { fontFamily: 'Inter_600SemiBold', fontSize: 10 },
+});
+
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -680,6 +1178,17 @@ export default function ProfileScreen() {
   const { user, logout, updateUser, myCompany, myProjects, updateCompany, removeProject } = useAuth();
   const { t, language, setLanguage } = useLanguage();
   const { history, clearHistory } = useWatchHistory();
+
+  const [showLogoutModal,  setShowLogoutModal]  = useState(false);
+  const [showLangModal,    setShowLangModal]    = useState(false);
+  const [showEditModal,    setShowEditModal]    = useState(false);
+  const [showNotifModal,   setShowNotifModal]   = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showHelpModal,    setShowHelpModal]    = useState(false);
+  const [showAboutModal,   setShowAboutModal]   = useState(false);
+  const [showProModal,     setShowProModal]     = useState(false);
+
+  if (!user) return null;
 
   // Modo empresa
   if (myCompany) {
@@ -699,17 +1208,6 @@ export default function ProfileScreen() {
       />
     );
   }
-
-  const [showLogoutModal,  setShowLogoutModal]  = useState(false);
-  const [showLangModal,    setShowLangModal]    = useState(false);
-  const [showEditModal,    setShowEditModal]    = useState(false);
-  const [showNotifModal,   setShowNotifModal]   = useState(false);
-  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-  const [showHelpModal,    setShowHelpModal]    = useState(false);
-  const [showAboutModal,   setShowAboutModal]   = useState(false);
-  const [showProModal,     setShowProModal]     = useState(false);
-
-  if (!user) return null;
 
   const LANGS: Language[] = ['pt', 'en', 'es'];
 
@@ -874,6 +1372,9 @@ export default function ProfileScreen() {
           </View>
         )}
 
+        {/* Caixa de Mensagens */}
+        <MyRequestsInbox userEmail={user.email} />
+
         {/* Settings sections */}
         {settingsItems.map((group, gi) => (
           <View key={gi} style={styles.section}>
@@ -968,6 +1469,7 @@ export default function ProfileScreen() {
         visible={showProModal}
         onClose={() => setShowProModal(false)}
         onSave={(data) => updateUser(data)}
+        navigation={navigation}
       />
 
       <NotificationsModal visible={showNotifModal} onClose={() => setShowNotifModal(false)} />

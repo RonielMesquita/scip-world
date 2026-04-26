@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   ScrollView, StatusBar, KeyboardAvoidingView, Platform,
-  Dimensions, ImageBackground, Alert, Image,
+  Dimensions, ImageBackground, Alert, Image, Keyboard, TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -364,12 +364,18 @@ export default function BusinessSetupScreen() {
         <View style={{ width: 40 }} />
       </View>
 
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1 }}
+      >
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={[s.scroll, { paddingTop: insets.top + 68, paddingBottom: insets.bottom + 40 }]}
+          keyboardDismissMode="on-drag"
+          contentContainerStyle={[s.scroll, { paddingTop: insets.top + 68, paddingBottom: insets.bottom + 220 }]}
         >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View>
           {/* Prévia */}
           <View style={{ gap: 6 }}>
             <Text style={s.previewLabel}>PRÉVIA DO SEU PERFIL</Text>
@@ -742,6 +748,8 @@ export default function BusinessSetupScreen() {
           <Text style={s.publishNote}>
             Apenas o nome do negócio é obrigatório. Você pode completar as demais informações depois.
           </Text>
+        </View>
+        </TouchableWithoutFeedback>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

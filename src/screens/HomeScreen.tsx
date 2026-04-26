@@ -16,16 +16,18 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import Colors from '../constants/colors';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList, navigationRef } from '../navigation/AppNavigator';
 import HeroBanner from '../components/HeroBanner';
+import GlobeNeonIcon from '../components/GlobeNeonIcon';
 import CalculatorCard from '../components/CalculatorCard';
 import FeaturedProjects from '../components/FeaturedProjects';
 import FeaturedCompanies from '../components/FeaturedCompanies';
 import BrandsSection from '../components/BrandsSection';
 import FAQSection from '../components/FAQSection';
-import { Company } from '../data/mockData';
+import { Company, COMPANIES, SPECIALISTS_ONLINE } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useLeadsNotification } from '../contexts/LeadsNotificationContext';
 import { Ionicons } from '@expo/vector-icons';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
@@ -35,6 +37,7 @@ function TopBar({ topInset, onNotif }: { topInset: number; onNotif: () => void }
   const navigation = useNavigation<NavProp>();
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { newLeadsCount } = useLeadsNotification();
 
   return (
     <View style={[styles.topBar, { paddingTop: topInset + 8 }]}>
@@ -63,16 +66,25 @@ function TopBar({ topInset, onNotif }: { topInset: number; onNotif: () => void }
           <View style={styles.notifDot} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.avatar, { backgroundColor: (user?.avatarColor ?? '#2F6BFF') + '33', borderColor: user?.avatarColor ?? Colors.blue }]}
+          style={styles.avatarWrap}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => { if (navigationRef.isReady()) navigationRef.navigate('Profile'); }}
         >
-          <Grad
-            colors={[user?.avatarColor ?? '#2F6BFF', (user?.avatarColor ?? '#1A47CC') + 'AA']}
-            style={StyleSheet.absoluteFill}
-            borderRadius={20}
-          />
-          <Text style={styles.avatarText}>{user?.avatarInitial ?? 'U'}</Text>
+          <View style={[styles.avatar, { backgroundColor: (user?.avatarColor ?? '#2F6BFF') + '33', borderColor: user?.avatarColor ?? Colors.blue }]}>
+            <Grad
+              colors={[user?.avatarColor ?? '#2F6BFF', (user?.avatarColor ?? '#1A47CC') + 'AA']}
+              style={StyleSheet.absoluteFill}
+              borderRadius={20}
+            />
+            <Text style={styles.avatarText}>{user?.avatarInitial ?? 'U'}</Text>
+          </View>
+          {newLeadsCount > 0 && (
+            <View style={styles.leadsBadge}>
+              <Text style={styles.leadsBadgeText}>
+                {newLeadsCount > 9 ? '9+' : newLeadsCount}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -99,7 +111,7 @@ function QuickActions({ onEstimate, onNav }: { onEstimate: () => void; onNav: (t
     { icon: 'calculator-outline',  color: Colors.cyan,   label: t('home.actions.calculate'),  onPress: onEstimate },
     { icon: 'business-outline',    color: Colors.purple, label: t('home.actions.companies'),  onPress: () => onNav('Empresas') },
     { icon: 'book-outline',        color: Colors.blue,   label: t('home.actions.courses'),    onPress: () => onNav('Cursos') },
-    { icon: 'people-outline',      color: Colors.cyan,   label: t('home.actions.community'),  onPress: () => onNav('Comunidade') },
+    { icon: 'people-outline',      color: Colors.cyan,   label: t('home.actions.community'),  onPress: () => { if (navigationRef.isReady()) navigationRef.navigate('ComunidadeStack'); } },
   ];
 
   return (
@@ -240,6 +252,136 @@ function ProUpgradeBanner({ onPress }: { onPress: () => void }) {
   );
 }
 
+// ─── Online Specialists ───────────────────────────────────────────────────────
+function OnlineSpecialists() {
+  const navigation = useNavigation<NavProp>();
+  const { t } = useLanguage();
+  return (
+    <View style={{ marginTop: 32 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View style={{ width: 4, height: 36, borderRadius: 2, backgroundColor: '#FF4D9D', shadowColor: '#FF4D9D', shadowOpacity: 0.8, shadowRadius: 6 }} />
+          <View>
+            <Text style={{ fontFamily: 'Inter_700Bold', fontSize: 18, color: Colors.white, letterSpacing: 0.2 }}>{t('home.specialistsOnlineTitle')}</Text>
+            <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 12, color: Colors.textMuted, marginTop: 2 }}>{t('home.specialistsAvailableNow')}</Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={{ paddingHorizontal: 14, paddingVertical: 6, borderRadius: 999, borderWidth: 1, borderColor: 'rgba(123,97,255,0.3)' }}
+          onPress={() => (navigation as any).navigate('Especialistas')}
+          activeOpacity={0.8}
+        >
+          <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 12, color: Colors.amber }}>{t('featured.seeAll')}</Text>
+        </TouchableOpacity>
+      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}>
+        {SPECIALISTS_ONLINE.map((s) => (
+          <TouchableOpacity
+            key={s.id}
+            style={{ width: 130, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', overflow: 'hidden', alignItems: 'center', gap: 6, backgroundColor: 'rgba(7,13,26,0.98)' }}
+            onPress={() => (navigation as any).navigate('EspecialistaProfile', { specialist: s })}
+            activeOpacity={0.85}
+          >
+            <View style={{ position: 'relative', marginBottom: 2 }}>
+              <View style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: s.avatarColor + '22', borderWidth: 2, borderColor: s.avatarColor, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 17, color: s.avatarColor }}>{s.avatarInitial}</Text>
+              </View>
+              <View style={{ position: 'absolute', bottom: 0, right: 0, width: 13, height: 13, borderRadius: 7, backgroundColor: '#00C48C', borderWidth: 2, borderColor: Colors.bgDeep }} />
+            </View>
+            <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: Colors.white, textAlign: 'center' }} numberOfLines={2}>{s.name}</Text>
+            <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 10, color: Colors.textMuted, textAlign: 'center' }} numberOfLines={1}>{s.role}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+              <Text style={{ fontSize: 10, color: Colors.star }}>★</Text>
+              <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 11, color: Colors.white }}>{s.rating.toFixed(1)}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
+// ─── Community Card ───────────────────────────────────────────────────────────
+function CommunityCard() {
+  const navigation = useNavigation<NavProp>();
+  const { t } = useLanguage();
+  const stats = [
+    { value: '2.847', label: t('home.communityMembers') },
+    { value: '12.4k', label: t('home.communityQuestions') },
+    { value: '38', label: t('home.communityOnlineNow') },
+  ];
+  return (
+    <TouchableOpacity
+      style={styles.communityCard}
+      activeOpacity={0.88}
+      onPress={() => (navigation as any).navigate('ComunidadeStack')}
+    >
+      {/* Gradiente de fundo */}
+      <Grad
+        colors={['rgba(76,201,240,0.13)', 'rgba(123,97,255,0.09)', 'rgba(4,8,15,0.0)']}
+        style={StyleSheet.absoluteFill}
+        borderRadius={24}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      />
+      <View style={styles.communityTopLine} />
+
+      {/* Linha superior: ícone + título + seta */}
+      <View style={styles.communityRow}>
+        <View style={{ position: 'relative' }}>
+          <View style={styles.communityIconBox}>
+            <GlobeNeonIcon size={54} />
+          </View>
+          {/* Badge de chat */}
+          <View style={styles.communityBadge}>
+            <Ionicons name="chatbubble-ellipses" size={9} color={Colors.cyan} />
+          </View>
+        </View>
+        <View style={styles.communityText}>
+          <Text style={styles.communityTitle}>{t('home.communityTitle')}</Text>
+          <Text style={styles.communitySub}>{t('home.communitySub')}</Text>
+        </View>
+        <View style={styles.communityArrow}>
+          <Grad colors={Colors.gradients.cyan} style={StyleSheet.absoluteFill} borderRadius={999} />
+          <Ionicons name="arrow-forward" size={16} color={Colors.white} />
+        </View>
+      </View>
+
+      {/* Divisor */}
+      <View style={styles.communityDivider} />
+
+      {/* Stats */}
+      <View style={styles.communityStats}>
+        {stats.map((s, i) => (
+          <React.Fragment key={s.label}>
+            <View style={styles.communityStat}>
+              <Text style={styles.communityStatValue}>{s.value}</Text>
+              <Text style={styles.communityStatLabel}>{s.label}</Text>
+            </View>
+            {i < stats.length - 1 && <View style={styles.communityStatDiv} />}
+          </React.Fragment>
+        ))}
+      </View>
+
+      {/* Tags */}
+      <View style={styles.communityPills}>
+        {(t('home.communityPills') as string[]).map((tag) => (
+          <View key={tag} style={styles.communityPill}>
+            <Text style={styles.communityPillText}>{tag}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* CTA */}
+      <View style={styles.communityCTA}>
+        <Grad colors={Colors.gradients.tech} style={StyleSheet.absoluteFill} borderRadius={14} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} />
+        <Text style={styles.communityCTAText}>{t('home.communityAccessBtn')}</Text>
+        <Ionicons name="arrow-forward-circle" size={18} color="rgba(255,255,255,0.8)" />
+      </View>
+    </TouchableOpacity>
+  );
+}
+
 // ─── Footer CTA ───────────────────────────────────────────────────────────────
 function FooterCTA() {
   const { t } = useLanguage();
@@ -253,7 +395,7 @@ function FooterCTA() {
       />
       <Text style={styles.footerTitle}>{t('home.readyToBuild')}</Text>
       <Text style={styles.footerSubtitle}>{t('home.expertContact')}</Text>
-      <TouchableOpacity style={styles.footerBtn} activeOpacity={0.85} onPress={() => navigation.getParent<any>()?.navigate('Estimar')}>
+      <TouchableOpacity style={styles.footerBtn} activeOpacity={0.85} onPress={() => { if (navigationRef.isReady()) navigationRef.navigate('Estimar'); }}>
         <Grad
           colors={Colors.gradients.tech}
           start={{ x: 0, y: 0 }}
@@ -286,7 +428,7 @@ export default function HomeScreen() {
   );
 
   const scrollToCalculator = () => {
-    navigation.getParent<any>()?.navigate('Estimar');
+    if (navigationRef.isReady()) navigationRef.navigate('Estimar');
   };
 
   const navigateToTab = (tab: string) => {
@@ -313,7 +455,7 @@ export default function HomeScreen() {
         ref={scrollRef}
         style={[styles.scroll, { opacity, transform: [{ translateY }] }]}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 90 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 90, paddingTop: insets.top + 56 }]}
         scrollEventThrottle={16}
       >
         {/* Hero Banner */}
@@ -334,7 +476,10 @@ export default function HomeScreen() {
         </View>
 
         {/* FEATURED PROJECTS */}
-        <FeaturedProjects onProjectPress={() => navigation.getParent<any>()?.navigate('Estimar')} />
+        <FeaturedProjects onProjectPress={(project) => {
+          const company = COMPANIES.find(c => c.id === project.companyId);
+          if (company) navigation.navigate('EmpresaProfile', { company });
+        }} />
 
         {/* DISASTER RESISTANCE */}
         <DisasterSection />
@@ -345,18 +490,26 @@ export default function HomeScreen() {
         {/* PRO UPGRADE BANNER — só para não-profissionais */}
         {(user?.role === 'Proprietário' || user?.role === 'Investidor' || user?.role === 'Usuário SCIP') && (
           <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
-            <ProUpgradeBanner onPress={() => navigation.getParent<any>()?.navigate('Profile')} />
+            <ProUpgradeBanner onPress={() => { if (navigationRef.isReady()) navigationRef.navigate('Profile'); }} />
           </View>
         )}
 
         {/* BRANDS */}
         <BrandsSection />
 
+        {/* COMMUNIDADE CARD */}
+        <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
+          <CommunityCard />
+        </View>
+
+        {/* ONLINE SPECIALISTS */}
+        <OnlineSpecialists />
+
+        {/* Footer CTA — Pronto para construir? */}
+        <FooterCTA />
+
         {/* FAQ */}
         <FAQSection />
-
-        {/* Footer CTA */}
-        <FooterCTA />
       </Animated.ScrollView>
 
       <NotificationsModal visible={showNotifs} onClose={() => setShowNotifs(false)} />
@@ -443,6 +596,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: Colors.bgDeep,
   },
+  avatarWrap: {
+    position: 'relative',
+  },
   avatar: {
     width: 38,
     height: 38,
@@ -458,6 +614,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.white,
     zIndex: 1,
+  },
+  leadsBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 17,
+    height: 17,
+    borderRadius: 9,
+    backgroundColor: '#FF4D9D',
+    borderWidth: 2,
+    borderColor: Colors.bgDeep,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  leadsBadgeText: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 9,
+    color: Colors.white,
+    lineHeight: 11,
   },
   scroll: {
     flex: 1,
@@ -784,5 +960,132 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: Colors.textDim,
     letterSpacing: 0.5,
+  },
+
+  // Community Card
+  communityCard: {
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(76,201,240,0.22)',
+    overflow: 'hidden',
+    gap: 16,
+  },
+  communityTopLine: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0,
+    height: 2.5,
+    backgroundColor: Colors.cyan,
+    opacity: 0.6,
+  },
+  communityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  communityIconBox: {
+    width: 54,
+    height: 54,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(4,8,15,0.92)',
+    borderWidth: 1,
+    borderColor: 'rgba(76,201,240,0.25)',
+  },
+  communityBadge: {
+    position: 'absolute',
+    bottom: -5,
+    right: -5,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: Colors.bgDeep,
+    borderWidth: 1.5,
+    borderColor: Colors.cyan,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.cyan,
+    shadowOpacity: 0.7,
+    shadowRadius: 5,
+  },
+  communityText: { flex: 1 },
+  communityTitle: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 16,
+    color: Colors.white,
+    marginBottom: 4,
+  },
+  communitySub: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 12,
+    color: Colors.textMuted,
+    lineHeight: 18,
+  },
+  communityArrow: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  communityDivider: {
+    height: 1,
+    backgroundColor: 'rgba(76,201,240,0.1)',
+  },
+  communityStats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  communityStat: { alignItems: 'center', gap: 2 },
+  communityStatValue: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 18,
+    color: Colors.white,
+  },
+  communityStatLabel: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 10,
+    color: Colors.textFaded,
+  },
+  communityStatDiv: {
+    width: 1,
+    height: 32,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+  },
+  communityPills: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  communityPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(76,201,240,0.07)',
+    borderWidth: 1,
+    borderColor: 'rgba(76,201,240,0.18)',
+  },
+  communityPillText: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 11,
+    color: Colors.cyan,
+  },
+  communityCTA: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    height: 46,
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
+  communityCTAText: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 14,
+    color: Colors.white,
+    zIndex: 1,
   },
 });

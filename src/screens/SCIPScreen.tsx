@@ -458,7 +458,7 @@ export default function SCIPScreen() {
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <Grad colors={Colors.gradients.background} style={StyleSheet.absoluteFill} />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 110 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 110, paddingTop: insets.top }}>
 
         {/* ── Hero ── */}
         <View style={styles.hero}>
