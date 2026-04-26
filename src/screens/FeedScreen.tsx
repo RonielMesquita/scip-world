@@ -87,13 +87,17 @@ function StoryItem({
 }
 
 // ─── Post Card ────────────────────────────────────────────────────────────────
+type LangKey = 'pt' | 'en' | 'es';
+
 function PostCard({ post }: { post: FeedPost }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [expanded, setExpanded] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const navigation = useNavigation<NavProp>();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const lang = (['pt', 'en', 'es'].includes(language) ? language : 'pt') as LangKey;
+  const caption = post.caption[lang];
 
   const handleAuthorPress = () => {
     if (!post.companyId) return;
@@ -110,7 +114,7 @@ function PostCard({ post }: { post: FeedPost }) {
     setLikeCount((p) => (liked ? p - 1 : p + 1));
   };
 
-  const isLong = post.caption.length > 95;
+  const isLong = caption.length > 95;
 
   return (
     <View style={styles.postCard}>
@@ -207,7 +211,7 @@ function PostCard({ post }: { post: FeedPost }) {
       <View style={styles.postCaption}>
         <Text style={styles.postCaptionText} numberOfLines={expanded ? undefined : 2}>
           <Text style={styles.postCaptionName}>{post.userName.split(' ')[0]} </Text>
-          {post.caption}
+          {caption}
         </Text>
         {isLong && !expanded && (
           <TouchableOpacity onPress={() => setExpanded(true)} activeOpacity={0.7}>

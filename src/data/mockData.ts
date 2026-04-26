@@ -1003,7 +1003,7 @@ export interface FeedPost {
   verified: boolean;
   isPremium: boolean;
   image: string;
-  caption: string;
+  caption: { pt: string; en: string; es: string };
   likes: number;
   timeAgo: string;
   location?: string;
@@ -1030,7 +1030,11 @@ export const FEED_POSTS: FeedPost[] = [
     verified: true,
     isPremium: true,
     image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80',
-    caption: 'Finalizamos mais uma obra residencial em SCIP! Estrutura concluída em tempo recorde com excelente acabamento. Tecnologia que transforma o mercado da construção. 🏗️',
+    caption: {
+      pt: 'Finalizamos mais uma obra residencial em SCIP! Estrutura concluída em tempo recorde com excelente acabamento. Tecnologia que transforma o mercado da construção. 🏗️',
+      en: 'We completed another residential SCIP project! Structure finished in record time with excellent finishing. Technology transforming the construction market. 🏗️',
+      es: '¡Finalizamos otra obra residencial en SCIP! Estructura concluida en tiempo récord con excelente acabado. Tecnología que transforma el mercado de la construcción. 🏗️',
+    },
     likes: 127,
     timeAgo: '2h',
     location: 'São Paulo, SP',
@@ -1045,7 +1049,11 @@ export const FEED_POSTS: FeedPost[] = [
     verified: true,
     isPremium: true,
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
-    caption: 'Projeto residencial de alto padrão concluído. 420m² de pura elegância com painéis SCIP de última geração. Venha conhecer nosso portfólio completo!',
+    caption: {
+      pt: 'Projeto residencial de alto padrão concluído. 420m² de pura elegância com painéis SCIP de última geração. Venha conhecer nosso portfólio completo!',
+      en: 'High-end residential project completed. 420m² of pure elegance with the latest generation SCIP panels. Come see our full portfolio!',
+      es: '¡Proyecto residencial de alto estándar concluido. 420m² de pura elegancia con paneles SCIP de última generación. Venga a conocer nuestro portafolio completo!',
+    },
     likes: 89,
     timeAgo: '5h',
     location: 'Curitiba, PR',
@@ -1060,7 +1068,11 @@ export const FEED_POSTS: FeedPost[] = [
     verified: true,
     isPremium: true,
     image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80',
-    caption: '🔥 PROMOÇÃO — Painéis SCIP com 15% de desconto para pedidos acima de 200m². Válido até fim do mês. Entre em contato agora!',
+    caption: {
+      pt: '🔥 PROMOÇÃO — Painéis SCIP com 15% de desconto para pedidos acima de 200m². Válido até fim do mês. Entre em contato agora!',
+      en: '🔥 PROMOTION — SCIP Panels with 15% discount for orders over 200m². Valid until end of month. Contact us now!',
+      es: '🔥 PROMOCIÓN — Paneles SCIP con 15% de descuento para pedidos superiores a 200m². Válido hasta fin de mes. ¡Contáctenos ahora!',
+    },
     likes: 214,
     timeAgo: '8h',
     location: 'Joinville, SC',
@@ -1075,7 +1087,11 @@ export const FEED_POSTS: FeedPost[] = [
     verified: true,
     isPremium: false,
     image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80',
-    caption: 'Design moderno encontra tecnologia SCIP. Este projeto em Florianópolis foi um desafio incrível — linhas limpas, muita luz natural e sustentabilidade em cada detalhe.',
+    caption: {
+      pt: 'Design moderno encontra tecnologia SCIP. Este projeto em Florianópolis foi um desafio incrível — linhas limpas, muita luz natural e sustentabilidade em cada detalhe.',
+      en: 'Modern design meets SCIP technology. This project in Florianópolis was an incredible challenge — clean lines, lots of natural light and sustainability in every detail.',
+      es: 'El diseño moderno se encuentra con la tecnología SCIP. Este proyecto en Florianópolis fue un desafío increíble — líneas limpias, mucha luz natural y sostenibilidad en cada detalle.',
+    },
     likes: 56,
     timeAgo: '12h',
     location: 'Florianópolis, SC',
@@ -1089,7 +1105,11 @@ export const FEED_POSTS: FeedPost[] = [
     verified: true,
     isPremium: true,
     image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80',
-    caption: 'Edifício comercial entregue 30 dias antes do prazo! A velocidade do sistema SCIP é impressionante. Parabéns à equipe toda! 🏆',
+    caption: {
+      pt: 'Edifício comercial entregue 30 dias antes do prazo! A velocidade do sistema SCIP é impressionante. Parabéns à equipe toda! 🏆',
+      en: 'Commercial building delivered 30 days ahead of schedule! The speed of the SCIP system is impressive. Congratulations to the whole team! 🏆',
+      es: '¡Edificio comercial entregado 30 días antes del plazo! La velocidad del sistema SCIP es impresionante. ¡Felicitaciones a todo el equipo! 🏆',
+    },
     likes: 178,
     timeAgo: '1d',
     location: 'Rio de Janeiro, RJ',
@@ -1104,7 +1124,11 @@ export const FEED_POSTS: FeedPost[] = [
     verified: true,
     isPremium: true,
     image: 'https://images.unsplash.com/photo-1565031491910-e57fac031c41?w=800&q=80',
-    caption: 'Nossos painéis chegando em mais um canteiro de obras em Brasília. Qualidade e agilidade que fazem a diferença. Solicite seu orçamento!',
+    caption: {
+      pt: 'Nossos painéis chegando em mais um canteiro de obras em Brasília. Qualidade e agilidade que fazem a diferença. Solicite seu orçamento!',
+      en: 'Our panels arriving at yet another construction site in Brasília. Quality and agility that make the difference. Request your quote!',
+      es: 'Nuestros paneles llegando a otro cantero de obras en Brasília. Calidad y agilidad que marcan la diferencia. ¡Solicite su presupuesto!',
+    },
     likes: 93,
     timeAgo: '2d',
     location: 'Brasília, DF',

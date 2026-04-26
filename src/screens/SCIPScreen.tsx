@@ -28,62 +28,62 @@ const CARD_H = CARD_W * 1.1;
 const ARTICLES = [
   {
     id: 'a1',
-    title: 'Explore o Catálogo de Produtos SCIP Fortified',
+    title: { pt: 'Explore o Catálogo de Produtos SCIP Fortified', en: 'Explore the SCIP Fortified Product Catalog', es: 'Explore el Catálogo de Productos SCIP Fortified' },
     date: '13 Fev 2026',
-    desc: 'Acesse o catálogo completo FSS SCIP com produtos, especificações e suporte técnico em um só lugar.',
+    desc: { pt: 'Acesse o catálogo completo FSS SCIP com produtos, especificações e suporte técnico em um só lugar.', en: 'Access the full FSS SCIP catalog with products, specifications and technical support in one place.', es: 'Acceda al catálogo completo FSS SCIP con productos, especificaciones y soporte técnico en un solo lugar.' },
     photo: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80',
     url: 'https://www.fortifiedscip.com',
-    tag: 'Catálogo',
+    tag: { pt: 'Catálogo', en: 'Catalog', es: 'Catálogo' },
     tagColor: Colors.blue,
   },
   {
     id: 'a2',
-    title: 'Por Que Construir com Sistema SCIP?',
+    title: { pt: 'Por Que Construir com Sistema SCIP?', en: 'Why Build with the SCIP System?', es: '¿Por Qué Construir con Sistema SCIP?' },
     date: '16 Out 2025',
-    desc: 'Eventos climáticos extremos, custos de seguro e demanda por edificações mais resistentes tornam o SCIP a escolha certa.',
+    desc: { pt: 'Eventos climáticos extremos, custos de seguro e demanda por edificações mais resistentes tornam o SCIP a escolha certa.', en: 'Extreme weather events, insurance costs and demand for more resilient buildings make SCIP the right choice.', es: 'Eventos climáticos extremos, costos de seguro y demanda de edificaciones más resistentes hacen del SCIP la elección correcta.' },
     photo: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&q=80',
     url: 'https://www.fortifiedscip.com',
-    tag: 'Por Que SCIP',
+    tag: { pt: 'Por Que SCIP', en: 'Why SCIP', es: 'Por Qué SCIP' },
     tagColor: Colors.cyan,
   },
   {
     id: 'a3',
-    title: 'Seguros e SCIP: Prêmios Explicados',
+    title: { pt: 'Seguros e SCIP: Prêmios Explicados', en: 'Insurance & SCIP: Premiums Explained', es: 'Seguros y SCIP: Primas Explicadas' },
     date: '26 Set 2025',
-    desc: 'Construções SCIP têm menor risco em desastres naturais, o que reduz significativamente o custo do seguro.',
+    desc: { pt: 'Construções SCIP têm menor risco em desastres naturais, o que reduz significativamente o custo do seguro.', en: 'SCIP constructions have lower risk in natural disasters, significantly reducing insurance costs.', es: 'Las construcciones SCIP tienen menor riesgo en desastres naturales, lo que reduce significativamente el costo del seguro.' },
     photo: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80',
     url: 'https://www.fortifiedscip.com',
-    tag: 'Finanças',
+    tag: { pt: 'Finanças', en: 'Finance', es: 'Finanzas' },
     tagColor: Colors.amber,
   },
   {
     id: 'a4',
-    title: 'SCIP vs Alvenaria: Comparativo Técnico',
+    title: { pt: 'SCIP vs Alvenaria: Comparativo Técnico', en: 'SCIP vs Masonry: Technical Comparison', es: 'SCIP vs Mampostería: Comparativa Técnica' },
     date: '02 Set 2025',
-    desc: 'Análise completa de desempenho térmico, acústico, estrutural e de custo entre os dois sistemas construtivos.',
+    desc: { pt: 'Análise completa de desempenho térmico, acústico, estrutural e de custo entre os dois sistemas construtivos.', en: 'Complete analysis of thermal, acoustic, structural and cost performance between the two construction systems.', es: 'Análisis completo de desempeño térmico, acústico, estructural y de costo entre los dos sistemas constructivos.' },
     photo: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&q=80',
     url: 'https://www.fortifiedscip.com',
-    tag: 'Técnico',
+    tag: { pt: 'Técnico', en: 'Technical', es: 'Técnico' },
     tagColor: Colors.purple,
   },
   {
     id: 'a5',
-    title: 'Resistência a Furacões Cat. 5 com Painéis SCIP',
+    title: { pt: 'Resistência a Furacões Cat. 5 com Painéis SCIP', en: 'Cat. 5 Hurricane Resistance with SCIP Panels', es: 'Resistencia a Huracanes Cat. 5 con Paneles SCIP' },
     date: '14 Ago 2025',
-    desc: 'Testes comprovam que estruturas SCIP resistem a ventos de 250 km/h. Saiba como a tecnologia salva vidas.',
+    desc: { pt: 'Testes comprovam que estruturas SCIP resistem a ventos de 250 km/h. Saiba como a tecnologia salva vidas.', en: 'Tests prove SCIP structures withstand winds of 250 km/h. Learn how the technology saves lives.', es: 'Pruebas demuestran que las estructuras SCIP resisten vientos de 250 km/h. Sepa cómo la tecnología salva vidas.' },
     photo: 'https://images.unsplash.com/photo-1565031491910-e57fac031c41?w=600&q=80',
     url: 'https://www.fortifiedscip.com',
-    tag: 'Segurança',
+    tag: { pt: 'Segurança', en: 'Safety', es: 'Seguridad' },
     tagColor: '#FF4D4D',
   },
   {
     id: 'a6',
-    title: 'Sustentabilidade na Construção com EPS',
+    title: { pt: 'Sustentabilidade na Construção com EPS', en: 'Sustainability in Construction with EPS', es: 'Sostenibilidad en la Construcción con EPS' },
     date: '30 Jul 2025',
-    desc: 'O EPS é 100% reciclável e reduz em 60% o desperdício de obra. Conheça o impacto ambiental positivo do SCIP.',
+    desc: { pt: 'O EPS é 100% reciclável e reduz em 60% o desperdício de obra. Conheça o impacto ambiental positivo do SCIP.', en: 'EPS is 100% recyclable and reduces construction waste by 60%. Discover the positive environmental impact of SCIP.', es: 'El EPS es 100% reciclable y reduce en un 60% el desperdicio en obra. Conozca el impacto ambiental positivo del SCIP.' },
     photo: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
     url: 'https://www.mundieps.com.br',
-    tag: 'Sustentabilidade',
+    tag: { pt: 'Sustentabilidade', en: 'Sustainability', es: 'Sostenibilidad' },
     tagColor: '#00C48C',
   },
 ];
@@ -91,60 +91,60 @@ const ARTICLES = [
 const PDF_MATERIALS = [
   {
     id: 'pdf1',
-    title: 'Manual de Instalação de Painéis SCIP',
-    desc: 'Guia passo a passo para montagem, fixação e projeção de shotcrete em painéis EPS.',
+    title: { pt: 'Manual de Instalação de Painéis SCIP', en: 'SCIP Panel Installation Manual', es: 'Manual de Instalación de Paneles SCIP' },
+    desc: { pt: 'Guia passo a passo para montagem, fixação e projeção de shotcrete em painéis EPS.', en: 'Step-by-step guide for assembly, fastening and shotcrete projection on EPS panels.', es: 'Guía paso a paso para montaje, fijación y proyección de shotcrete en paneles EPS.' },
     photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
-    tag: 'Instalação',
+    tag: { pt: 'Instalação', en: 'Installation', es: 'Instalación' },
     tagColor: Colors.blue,
     pages: '48 pág.',
     url: '#',
   },
   {
     id: 'pdf2',
-    title: 'Normas FEMA para Construção Resiliente',
-    desc: 'Requisitos da FEMA para estruturas resistentes a furacões, inundações e sismos.',
+    title: { pt: 'Normas FEMA para Construção Resiliente', en: 'FEMA Standards for Resilient Construction', es: 'Normas FEMA para Construcción Resiliente' },
+    desc: { pt: 'Requisitos da FEMA para estruturas resistentes a furacões, inundações e sismos.', en: 'FEMA requirements for structures resistant to hurricanes, floods and earthquakes.', es: 'Requisitos de FEMA para estructuras resistentes a huracanes, inundaciones y sismos.' },
     photo: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80',
-    tag: 'FEMA',
+    tag: { pt: 'FEMA', en: 'FEMA', es: 'FEMA' },
     tagColor: '#FF4D4D',
     pages: '112 pág.',
     url: '#',
   },
   {
     id: 'pdf3',
-    title: 'ASTM E72 — Norma Internacional SCIP',
-    desc: 'Testes de resistência estrutural e desempenho de painéis SCIP conforme ASTM.',
+    title: { pt: 'ASTM E72 — Norma Internacional SCIP', en: 'ASTM E72 — International SCIP Standard', es: 'ASTM E72 — Norma Internacional SCIP' },
+    desc: { pt: 'Testes de resistência estrutural e desempenho de painéis SCIP conforme ASTM.', en: 'Structural strength and performance tests for SCIP panels per ASTM.', es: 'Pruebas de resistencia estructural y desempeño de paneles SCIP según ASTM.' },
     photo: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&q=80',
-    tag: 'ASTM',
+    tag: { pt: 'ASTM', en: 'ASTM', es: 'ASTM' },
     tagColor: Colors.cyan,
     pages: '36 pág.',
     url: '#',
   },
   {
     id: 'pdf4',
-    title: 'ICC-ESR — Laudos Técnicos Internacionais',
-    desc: 'Relatórios de avaliação ICC-ES para aprovação de painéis SCIP em projetos.',
+    title: { pt: 'ICC-ESR — Laudos Técnicos Internacionais', en: 'ICC-ESR — International Technical Reports', es: 'ICC-ESR — Informes Técnicos Internacionales' },
+    desc: { pt: 'Relatórios de avaliação ICC-ES para aprovação de painéis SCIP em projetos.', en: 'ICC-ES evaluation reports for SCIP panel approval in projects.', es: 'Informes de evaluación ICC-ES para aprobación de paneles SCIP en proyectos.' },
     photo: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&q=80',
-    tag: 'ICC-ES',
+    tag: { pt: 'ICC-ES', en: 'ICC-ES', es: 'ICC-ES' },
     tagColor: Colors.purple,
     pages: '64 pág.',
     url: '#',
   },
   {
     id: 'pdf5',
-    title: 'Manual Técnico de Fundações para SCIP',
-    desc: 'Radier, sapatas e blocos adaptados ao sistema SCIP com cargas reduzidas.',
+    title: { pt: 'Manual Técnico de Fundações para SCIP', en: 'Technical Manual for SCIP Foundations', es: 'Manual Técnico de Cimentaciones para SCIP' },
+    desc: { pt: 'Radier, sapatas e blocos adaptados ao sistema SCIP com cargas reduzidas.', en: 'Raft, footings and blocks adapted to the SCIP system with reduced loads.', es: 'Losas, zapatas y bloques adaptados al sistema SCIP con cargas reducidas.' },
     photo: 'https://images.unsplash.com/photo-1565031491910-e57fac031c41?w=600&q=80',
-    tag: 'Fundações',
+    tag: { pt: 'Fundações', en: 'Foundations', es: 'Cimentaciones' },
     tagColor: Colors.amber,
     pages: '52 pág.',
     url: '#',
   },
   {
     id: 'pdf6',
-    title: 'Guia de Instalações Elétricas em Painéis',
-    desc: 'Passagem de eletrodutos, caixas embutidas e normas ABNT para SCIP.',
+    title: { pt: 'Guia de Instalações Elétricas em Painéis', en: 'Electrical Installations Guide for Panels', es: 'Guía de Instalaciones Eléctricas en Paneles' },
+    desc: { pt: 'Passagem de eletrodutos, caixas embutidas e normas ABNT para SCIP.', en: 'Conduit routing, embedded boxes and ABNT standards for SCIP.', es: 'Paso de electroductos, cajas embutidas y normas ABNT para SCIP.' },
     photo: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80',
-    tag: 'Elétrica',
+    tag: { pt: 'Elétrica', en: 'Electrical', es: 'Eléctrica' },
     tagColor: '#00C48C',
     pages: '40 pág.',
     url: '#',
@@ -155,8 +155,8 @@ const MANUFACTURERS = [
   {
     id: 'fortified',
     name: 'Fortified SCIP',
-    tagline: 'Structural Concrete Insulated Panels',
-    country: '🇺🇸 Estados Unidos',
+    tagline: { pt: 'Structural Concrete Insulated Panels', en: 'Structural Concrete Insulated Panels', es: 'Paneles Estructurales de Concreto Aislante' },
+    country: { pt: '🇺🇸 Estados Unidos', en: '🇺🇸 United States', es: '🇺🇸 Estados Unidos' },
     url: 'https://www.fortifiedscip.com',
     bg: ['#0A1628', '#1a3a6b'],
     accent: '#2F6BFF',
@@ -165,8 +165,8 @@ const MANUFACTURERS = [
   {
     id: 'mundi',
     name: 'Mundi EPS',
-    tagline: 'Painéis e Soluções Construtivas em EPS',
-    country: '🇧🇷 Brasil',
+    tagline: { pt: 'Painéis e Soluções Construtivas em EPS', en: 'EPS Panels and Construction Solutions', es: 'Paneles y Soluciones Constructivas en EPS' },
+    country: { pt: '🇧🇷 Brasil', en: '🇧🇷 Brazil', es: '🇧🇷 Brasil' },
     url: 'https://www.mundieps.com.br',
     bg: ['#0d1f0d', '#1a4a1a'],
     accent: '#00C48C',
@@ -175,8 +175,8 @@ const MANUFACTURERS = [
   {
     id: 'gct',
     name: 'GCT Painéis',
-    tagline: 'Sistemas Construtivos em EPS',
-    country: '🇧🇷 Brasil',
+    tagline: { pt: 'Sistemas Construtivos em EPS', en: 'EPS Construction Systems', es: 'Sistemas Constructivos en EPS' },
+    country: { pt: '🇧🇷 Brasil', en: '🇧🇷 Brazil', es: '🇧🇷 Brasil' },
     url: 'https://www.gctpaineis.com.br',
     bg: ['#1a1a0d', '#3a3a0a'],
     accent: Colors.amber,
@@ -185,8 +185,8 @@ const MANUFACTURERS = [
   {
     id: 'abnt',
     name: 'ABNT NBR 15575',
-    tagline: 'Norma de Desempenho de Edificações',
-    country: '🇧🇷 Norma Técnica',
+    tagline: { pt: 'Norma de Desempenho de Edificações', en: 'Building Performance Standard', es: 'Norma de Desempeño de Edificaciones' },
+    country: { pt: '🇧🇷 Norma Técnica', en: '🇧🇷 Technical Standard', es: '🇧🇷 Norma Técnica' },
     url: 'https://www.abnt.org.br',
     bg: ['#1a0a0a', '#3a1010'],
     accent: '#FF4D4D',
@@ -236,8 +236,11 @@ function PanelCard({ panel }: { panel: PanelItem }) {
 }
 
 // ─── Manufacturer Card ────────────────────────────────────────────────────────
+type LangKey = 'pt' | 'en' | 'es';
+
 function ManufacturerCard({ m }: { m: typeof MANUFACTURERS[0] }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const lang = (['pt', 'en', 'es'].includes(language) ? language : 'pt') as LangKey;
   return (
     <TouchableOpacity
       style={styles.mfCard}
@@ -259,8 +262,8 @@ function ManufacturerCard({ m }: { m: typeof MANUFACTURERS[0] }) {
       {/* Info */}
       <View style={styles.mfInfo}>
         <Text style={styles.mfName}>{m.name}</Text>
-        <Text style={styles.mfTagline}>{m.tagline}</Text>
-        <Text style={styles.mfCountry}>{m.country}</Text>
+        <Text style={styles.mfTagline}>{m.tagline[lang]}</Text>
+        <Text style={styles.mfCountry}>{m.country[lang]}</Text>
       </View>
 
       {/* Visit button */}
@@ -274,7 +277,8 @@ function ManufacturerCard({ m }: { m: typeof MANUFACTURERS[0] }) {
 
 // ─── Article Card ─────────────────────────────────────────────────────────────
 function ArticleCard({ article }: { article: typeof ARTICLES[0] }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const lang = (['pt', 'en', 'es'].includes(language) ? language : 'pt') as LangKey;
   return (
     <TouchableOpacity
       style={styles.articleCard}
@@ -288,13 +292,13 @@ function ArticleCard({ article }: { article: typeof ARTICLES[0] }) {
       >
         <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(4,8,15,0.35)' }]} />
         <View style={[styles.articleTag, { backgroundColor: article.tagColor + '25', borderColor: article.tagColor + '60' }]}>
-          <Text style={[styles.articleTagText, { color: article.tagColor }]}>{article.tag}</Text>
+          <Text style={[styles.articleTagText, { color: article.tagColor }]}>{article.tag[lang]}</Text>
         </View>
       </ImageBackground>
       <View style={styles.articleBody}>
         <Text style={styles.articleDate}>{article.date}</Text>
-        <Text style={styles.articleTitle} numberOfLines={2}>{article.title}</Text>
-        <Text style={styles.articleDesc} numberOfLines={3}>{article.desc}</Text>
+        <Text style={styles.articleTitle} numberOfLines={2}>{article.title[lang]}</Text>
+        <Text style={styles.articleDesc} numberOfLines={3}>{article.desc[lang]}</Text>
         <View style={styles.articleReadMore}>
           <Text style={styles.articleReadMoreText}>{t('scip.readMore')}</Text>
           <Ionicons name="arrow-forward" size={13} color={Colors.blue} />
@@ -306,7 +310,8 @@ function ArticleCard({ article }: { article: typeof ARTICLES[0] }) {
 
 // ─── PDF Card ─────────────────────────────────────────────────────────────────
 function PdfCard({ doc }: { doc: typeof PDF_MATERIALS[0] }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const lang = (['pt', 'en', 'es'].includes(language) ? language : 'pt') as LangKey;
   const isPlaceholder = doc.url === '#';
   return (
     <TouchableOpacity
@@ -322,7 +327,7 @@ function PdfCard({ doc }: { doc: typeof PDF_MATERIALS[0] }) {
         <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(4,8,15,0.45)' }]} />
         {/* PDF badge top-left */}
         <View style={[styles.articleTag, { backgroundColor: doc.tagColor + '25', borderColor: doc.tagColor + '60' }]}>
-          <Text style={[styles.articleTagText, { color: doc.tagColor }]}>{doc.tag}</Text>
+          <Text style={[styles.articleTagText, { color: doc.tagColor }]}>{doc.tag[lang]}</Text>
         </View>
         {/* PDF icon top-right */}
         <View style={styles.pdfBadge}>
@@ -332,8 +337,8 @@ function PdfCard({ doc }: { doc: typeof PDF_MATERIALS[0] }) {
       </ImageBackground>
       <View style={styles.articleBody}>
         <Text style={styles.articleDate}>{doc.pages}</Text>
-        <Text style={styles.articleTitle} numberOfLines={2}>{doc.title}</Text>
-        <Text style={styles.articleDesc} numberOfLines={3}>{doc.desc}</Text>
+        <Text style={styles.articleTitle} numberOfLines={2}>{doc.title[lang]}</Text>
+        <Text style={styles.articleDesc} numberOfLines={3}>{doc.desc[lang]}</Text>
         <View style={styles.articleReadMore}>
           {isPlaceholder ? (
             <>
